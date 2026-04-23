@@ -1,0 +1,20 @@
+HARITA OLUŞTURMA — Kullanım
+============================
+
+1) Bilgisayarda Node.js 18 veya üzeri kurulu olmalı (https://nodejs.org).
+
+2) Bu klasörde çift tıklayarak "calistir.bat" çalıştırın
+   VEYA terminalde:
+      cd harita-olusturma
+      npm install
+      npm run olustur
+
+3) Üretilen dosyalar bir üst klasörde "boundaries" içine yazılır:
+      samsun.json, sinop.json, kastamonu.json, karabük.json, bartın.json, zonguldak.json
+
+4) Bu JSON dosyalarını GitHub reponuzda "boundaries" klasörüne yükleyin.
+   Raw klasör adresini ARSA_ANALIZ.html içindeki BOUNDARY_REMOTE_BASE_URL satırına yazın.
+
+Not: OpenStreetMap sunucusu (Overpass) bazen meşgul olur (429/504). Program yeniden dener;
+   yine de hata alırsanız bir süre sonra sadece eksik iller için scripti tekrar çalıştırın
+   veya "npm run olustur"u yeniden deneyin.

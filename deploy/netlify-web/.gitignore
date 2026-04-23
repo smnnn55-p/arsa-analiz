@@ -1,0 +1,6 @@
+# Build çıktısı — Netlify her deploy’da yeniden üretir; Git’e girmesine gerek yok.
+index.html
+boundaries/
+data/
+il-ilce-tr.json
+icon.png

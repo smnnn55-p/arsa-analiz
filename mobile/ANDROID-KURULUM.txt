@@ -1,0 +1,83 @@
+TURKA Arsa Analiz — Android APK (Capacitor)
+==========================================
+
+ÖNEMLİ — Klasör yolu (Türkçe harf, boşluk)
+------------------------------------------
+Android Gradle / araç zinciri, proje yolunda Türkçe karakter (İ, ş, ç, ğ, ö, ü …)
+veya sorunlu boşluklar olduğunda derlemeyi reddedebilir veya rastgele kırılabilir.
+
+ÖNERİLEN: Tüm projeyi (üst klasör dahil) kopyalayıp kısa ve yalnızca İngilizce harf + rakam + _ kullanın.
+Örnek:
+  C:\dev\arsa_analiz
+  D:\YAZILIM\ARSA_ANALIZ
+Sonra "mobile" klasöründeki komutları bu yeni konumdan çalıştırın.
+
+Son çare (önerilmez): mobile\android\gradle.properties dosyasında yorum satırı olarak
+  android.overridePathCheck=true
+anlatımı vardır — bazı sürümlerde işe yarar; gelecekte kırılabilir, tüm araçları düzeltmez.
+
+Gerekli yazılımlar
+------------------
+1) Node.js LTS (https://nodejs.org/) — kurulumda "npm" gelsin.
+2) Android Studio (https://developer.android.com/studio) — kurulumda:
+   - Android SDK
+   - en az bir "Android SDK Platform" (ör. API 34)
+   - Android SDK Build-Tools
+3) JDK 17 (Android Studio ile gelen "Embedded JDK" genelde yeterlidir).
+   Komut satırından Gradle çalıştıracaksanız JAVA_HOME en az 11 olmalıdır (tercihen 17).
+
+Not: Bu klasörde `npx cap add android` bir kez çalıştırıldıysa `android/` alt projesi oluşmuştur.
+Yeni bilgisayarda yalnızca `npm install` → `npm run www:sync` → `npx cap add android` → `npx cap sync` yeterlidir.
+
+Adımlar (özet)
+--------------
+1) Bu klasörde terminal açın:
+   cd mobile
+
+2) Bağımlılıkları yükleyin:
+   npm install
+
+3) Web dosyalarını www içine kopyalayın:
+   npm run www:sync
+
+4) Android projesini ilk kez ekleyin (bir kez):
+   npx cap add android
+
+5) Senkron:
+   npx cap sync android
+
+6) Android Studio'da açın:
+   npm run android:open
+   veya: npx cap open android
+
+7) Android Studio'da: Build → Build Bundle(s) / APK(s) → Build APK(s)
+   Oluşan APK yolu genelde:
+   android\app\build\outputs\apk\debug\app-debug.apk
+
+HTML'i değiştirdikten sonra
+----------------------------
+   npm run android:sync
+   sonra Android Studio'da yeniden derleyin.
+
+Hata: "This build uses a Java 8 JVM" / "requires at least JVM runtime version 11"
+--------------------------------------------------------------------
+Gradle, bilgisayarınızda varsayılan olarak Java 8 bulmuş; Android derleyicisi ise 11+ (çoğu kurulumda 17) istiyor.
+
+Çözüm A — Android Studio (en kolay):
+  File → Settings → Build, Execution, Deployment → Build Tools → Gradle
+  → "Gradle JDK" alanında "jbr-17" veya "Embedded JDK" seçin, projeyi Studio'dan derleyin.
+
+Çözüm B — Komut satırı (PowerShell), Android Studio JBR yolunu kendi PC'nize göre yazın:
+  $env:JAVA_HOME="C:\Program Files\Android\Android Studio\jbr"
+  $env:Path="$env:JAVA_HOME\bin;$env:Path"
+  java -version
+  .\gradlew assembleDebug
+
+Çözüm C — mobile\android\gradle.properties içinde org.gradle.java.home=... satırını
+  ANDROID-KURULUM ile birlikte eklenen örneğe göre açıp yolunuzu yazın.
+
+Notlar
+------
+- Uygulama harita ve Firebase için internet ister; test telefonunda Wi‑Fi veya mobil veri açık olsun.
+- Yerel sınır JSON'ları www/boundaries altına kopyalanır; yeni il dosyası eklediyseniz www:sync sonrası sync tekrarlayın.
+- Yayın (Play Store) için imzalı "release" APK/AAB gerekir; debug APK yalnızca kendi cihazınızda deneme içindir.

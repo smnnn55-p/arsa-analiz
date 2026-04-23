@@ -1,0 +1,54 @@
+TURKA Arsa Analiz — Android APK hazırlığı
+=========================================
+
+Genel
+-----
+• Ana web uygulaması: üst klasördeki ARSA_ANALIZ.html
+• Capacitor kabuğu: bu klasör (mobile/)
+• Uygulama kimliği: com.turka.arsaanaliz (capacitor.config.json)
+
+İkon
+----
+• Proje köküne (ARSA_ANALIZ.html ile aynı dizin) "icon.png" koyun.
+• Önerilen boyut: en az 1024×1024 px, kare PNG (Android Play ve keskin ikonlar için).
+• npm betikleri icon.png dosyasını:
+  - mobile/www/icon.png (tarayıcı / WebView içi sekme ikonu)
+  - mobile/assets/icon-only.png (Android launcher ikonları için kaynak)
+  olarak kullanır.
+
+Gereksinimler (bilgisayarınızda)
+--------------------------------
+• Node.js 18+ (npm ile birlikte)
+• Android Studio (SDK, platform tools)
+• JDK 17 veya 21 — Gradle eklentisi Java 11+ ister; ortamda Java 8 varsa build hata verir.
+  JAVA_HOME’u JDK 17+ olarak ayarlayın.
+
+Her güncellemede (önce üst klasördeki HTML’i kaydettikten sonra)
+----------------------------------------------------------------
+1) Komut satırında:
+     cd ...\ARSA_ANALIZ\mobile
+     npm run android:sync
+
+   Bu komut: web dosyalarını www’ye kopyalar, icon.png varsa Android mipmap
+   ikonlarını üretir, Capacitor’ı Android projesine senkronlar.
+
+2) APK üretmek:
+   Seçenek A — Android Studio: npm run android:open  (veya Studio’da mobile/android klasörünü açın)
+             Build → Build Bundle(s) / APK(s) → Build APK(s)
+
+   Seçenek B — Gradle (JDK 17+ ortamında):
+     cd android
+     gradlew.bat assembleDebug
+
+   Debug APK genelde şurada oluşur:
+     mobile\android\app\build\outputs\apk\debug\app-debug.apk
+
+Mağaza / imzalama
+-----------------
+• Yayın (release) APK veya AAB için Android Studio’da signing key tanımlanır.
+• Debug APK yalnızca test içindir.
+
+Cep telefonu uyumu (kontrol özeti)
+----------------------------------
+• viewport fit=cover, güvenli alan (notch), touch-action ve ≤768px için dikey düzen mevcut.
+• Harita tam ekranın altını kullanır; yan panel mobilde üstte, yüksekliği sınırlı.

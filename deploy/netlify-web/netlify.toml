@@ -1,0 +1,6 @@
+# Netlify: Base directory = deploy/netlify-web
+# Build: repo kökünden index.html + boundaries + data kopyalanır.
+
+[build]
+  command = "node scripts/sync-from-parent.mjs"
+  publish = "."

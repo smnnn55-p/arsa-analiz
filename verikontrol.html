@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Verikontrol — ARSA ANALİZ parsel deposu</title>
+    <style>
+        :root {
+            --bg: #0f1419;
+            --card: #1a2332;
+            --border: #2d3a4d;
+            --text: #e8eef4;
+            --muted: #8fa3b8;
+            --accent: #3498db;
+            --ok: #1dd1a1;
+            --warn: #f39c12;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Segoe UI", system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.45;
+        }
+        header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            background: var(--card);
+        }
+        h1 {
+            margin: 0 0 6px 0;
+            font-size: 1.35rem;
+            font-weight: 700;
+        }
+        .sub {
+            color: var(--muted);
+            font-size: 0.85rem;
+            word-break: break-all;
+        }
+        main {
+            padding: 20px 24px 40px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .notice {
+            background: #2c2419;
+            border: 1px solid #6b5420;
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-bottom: 20px;
+            font-size: 0.88rem;
+            color: #f0d9a8;
+        }
+        .notice strong { color: #fff; }
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        button {
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 16px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .btn-primary { background: var(--accent); color: #fff; }
+        .btn-primary:hover { filter: brightness(1.08); }
+        .btn-secondary { background: var(--border); color: var(--text); }
+        .btn-secondary:hover { background: #3d4f66; }
+        .btn-warn {
+            background: #6b5420;
+            color: #fff6d9;
+            border: 1px solid #a67c2a;
+        }
+        .btn-warn:hover { filter: brightness(1.08); }
+        .stat {
+            font-size: 0.95rem;
+            color: var(--muted);
+        }
+        .stat b { color: var(--ok); font-size: 1.1rem; }
+        .err {
+            background: #3d1f24;
+            border: 1px solid #8b3a44;
+            color: #ffb4bc;
+            padding: 12px 14px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            white-space: pre-wrap;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+            background: var(--card);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        th, td {
+            text-align: left;
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: top;
+        }
+        th {
+            background: #141c28;
+            color: var(--muted);
+            font-weight: 600;
+        }
+        tr:last-child td { border-bottom: none; }
+        code {
+            font-family: ui-monospace, Consolas, monospace;
+            font-size: 0.78rem;
+            color: #a8d8ff;
+        }
+        .json-wrap {
+            max-height: 220px;
+            overflow: auto;
+            background: #0d1117;
+            border-radius: 6px;
+            padding: 8px;
+            margin-top: 6px;
+        }
+        .json-wrap pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-break: break-word;
+            font-size: 0.72rem;
+            color: #c9d1d9;
+        }
+        .empty {
+            padding: 28px;
+            text-align: center;
+            color: var(--muted);
+            background: var(--card);
+            border-radius: 10px;
+            border: 1px dashed var(--border);
+        }
+        footer {
+            padding: 16px 24px;
+            color: var(--muted);
+            font-size: 0.78rem;
+            border-top: 1px solid var(--border);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Verikontrol</h1>
+        <div class="sub" id="origin-line"></div>
+    </header>
+    <main>
+        <div class="notice">
+            <strong>Aynı veri hangi adreste?</strong>
+            IndexedDB tarayıcıda <strong>sayfanın tam adresine</strong> (kök) bağlıdır.
+            Ana program <code>ARSA_ANALIZ.html</code> ile bu sayfa <strong>aynı şekilde</strong> açılmalı
+            (tercihen aynı klasör, aynı <code>file://</code> yolu veya ikisi de aynı <code>http://localhost/...</code> altında).
+            Farklı yol veya farklı HTML dosyası adı bazı tarayıcılarda <strong>ayrı depo</strong> demektir — kayıt sayısı 0 görünebilir.
+            <br /><br />
+            <strong>Boş yedek:</strong> «Tümünü JSON indir» ile oluşan dosyada yalnızca <code>[]</code> varsa, o dosyada parsel verisi yoktur — geri yükleyemezsiniz. Not defteri ile açıp ilk satırda <code>[{</code> görmüyorsanız yedek boştur.
+        </div>
+        <div class="toolbar">
+            <button type="button" class="btn-primary" id="btn-refresh">Yenile</button>
+            <button type="button" class="btn-secondary" id="btn-export">Tümünü JSON indir (yedek)</button>
+            <button type="button" class="btn-warn" id="btn-import-trigger">JSON yedeğini içe aktar</button>
+            <input type="file" id="file-import-json" accept=".json,application/json" style="display:none;" />
+            <span class="stat">Kayıt: <b id="count-num">—</b></span>
+        </div>
+        <div id="error-box" class="err" style="display:none;"></div>
+        <div id="table-host"></div>
+    </main>
+    <footer>
+        Veritabanı adı: <code>arsa_analiz_parcel_db</code> · Mağaza: <code>parcels</code> · İçe aktarma: aynı <code>id</code> varsa üzerine yazar (silme düğmesi yok).
+    </footer>
+    <script>
+        const PARCEL_DB_NAME = "arsa_analiz_parcel_db";
+        const PARCEL_STORE = "parcels";
+
+        const originLine = document.getElementById("origin-line");
+        const countNum = document.getElementById("count-num");
+        const errorBox = document.getElementById("error-box");
+        const tableHost = document.getElementById("table-host");
+
+        function showError(msg) {
+            errorBox.style.display = "block";
+            errorBox.textContent = msg;
+        }
+        function clearError() {
+            errorBox.style.display = "none";
+            errorBox.textContent = "";
+        }
+
+        function openDb() {
+            return new Promise((resolve, reject) => {
+                const req = indexedDB.open(PARCEL_DB_NAME, 1);
+                req.onerror = () => reject(req.error || new Error("IndexedDB açılamadı"));
+                req.onsuccess = () => resolve(req.result);
+                req.onupgradeneeded = (e) => {
+                    const db = e.target.result;
+                    if (!db.objectStoreNames.contains(PARCEL_STORE)) {
+                        db.createObjectStore(PARCEL_STORE, { keyPath: "id" });
+                    }
+                };
+            });
+        }
+
+        function getAllParcels(db) {
+            return new Promise((resolve, reject) => {
+                if (!db.objectStoreNames.contains(PARCEL_STORE)) {
+                    resolve([]);
+                    return;
+                }
+                const tx = db.transaction(PARCEL_STORE, "readonly");
+                const q = tx.objectStore(PARCEL_STORE).getAll();
+                q.onsuccess = () => resolve(q.result || []);
+                q.onerror = () => reject(q.error);
+            });
+        }
+
+        function normalizeParcelRecordLoose(raw) {
+            if (!raw || typeof raw !== "object") return null;
+            const att = raw.attachments && typeof raw.attachments === "object" ? raw.attachments : {};
+            let assocs = [];
+            if (Array.isArray(raw.associations)) {
+                const seen = new Set();
+                for (const x of raw.associations) {
+                    if (!x || !x.il || !x.ilce) continue;
+                    const k = x.il + "\t" + x.ilce;
+                    if (seen.has(k)) continue;
+                    seen.add(k);
+                    assocs.push({ il: String(x.il).trim(), ilce: String(x.ilce).trim() });
+                }
+            }
+            return { ...raw, attachments: { ...att }, associations: assocs };
+        }
+
+        function putParcelsBatch(db, rows) {
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(PARCEL_STORE, "readwrite");
+                const store = tx.objectStore(PARCEL_STORE);
+                let n = 0;
+                for (const raw of rows) {
+                    const rec = normalizeParcelRecordLoose(raw);
+                    if (!rec || !rec.id || !rec.geojson) continue;
+                    store.put(rec);
+                    n++;
+                }
+                tx.oncomplete = () => resolve(n);
+                tx.onerror = () => reject(tx.error);
+            });
+        }
+
+        function summarizeRow(r) {
+            const il = r.il != null ? String(r.il) : "";
+            const ilce = r.ilce != null ? String(r.ilce) : "";
+            const mah = r.mahalle != null ? String(r.mahalle) : "";
+            const ada = r.ada != null ? String(r.ada) : "";
+            const par = r.parsel != null ? String(r.parsel) : "";
+            const saved = r.savedAt != null ? String(r.savedAt) : "";
+            const ass = Array.isArray(r.associations) ? r.associations.length : 0;
+            const att = r.attachments && typeof r.attachments === "object" ? Object.keys(r.attachments).length : 0;
+            return { il, ilce, mah, ada, par, saved, ass, att };
+        }
+
+        function renderTable(rows) {
+            if (!rows.length) {
+                tableHost.innerHTML =
+                    '<div class="empty">Bu adreste mağazada kayıt yok (0 parsel).<br/>Ana programı tam olarak hangi URL ile açtığınızı yukarıdaki satırla karşılaştırın.</div>';
+                return;
+            }
+            const esc = (s) =>
+                String(s)
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;");
+            let html =
+                "<table><thead><tr><th>id</th><th>İl / ilçe / mahalle</th><th>Ada / parsel</th><th>savedAt</th><th>İlişki / ek</th><th>Ham kayıt</th></tr></thead><tbody>";
+            for (const r of rows) {
+                const s = summarizeRow(r);
+                const preview = JSON.stringify(r, null, 2);
+                html += "<tr>";
+                html += "<td><code>" + esc(r.id || "") + "</code></td>";
+                html += "<td>" + esc([s.il, s.ilce, s.mah].filter(Boolean).join(" · ")) + "</td>";
+                html += "<td>" + esc([s.ada, s.par].filter(Boolean).join(" / ")) + "</td>";
+                html += "<td><code style='font-size:0.72rem'>" + esc(s.saved) + "</code></td>";
+                html += "<td>" + esc(String(s.ass) + " ilişki · " + String(s.att) + " ek türü") + "</td>";
+                html +=
+                    "<td><div class='json-wrap'><pre>" +
+                    esc(preview) +
+                    "</pre></div></td>";
+                html += "</tr>";
+            }
+            html += "</tbody></table>";
+            tableHost.innerHTML = html;
+        }
+
+        async function load() {
+            clearError();
+            originLine.textContent = "Şu anki sayfa adresi: " + location.href;
+            countNum.textContent = "…";
+            tableHost.innerHTML = "<div class='empty'>Yükleniyor…</div>";
+            try {
+                const db = await openDb();
+                const all = await getAllParcels(db);
+                db.close();
+                countNum.textContent = String(all.length);
+                const sorted = [...all].sort((a, b) =>
+                    String(a.savedAt || "").localeCompare(String(b.savedAt || ""), "tr")
+                );
+                renderTable(sorted);
+            } catch (e) {
+                console.error(e);
+                countNum.textContent = "?";
+                tableHost.innerHTML = "";
+                showError(String(e && e.message ? e.message : e));
+            }
+        }
+
+        function downloadJson(rows) {
+            const blob = new Blob([JSON.stringify(rows, null, 2)], { type: "application/json;charset=utf-8" });
+            const a = document.createElement("a");
+            const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+            a.href = URL.createObjectURL(blob);
+            a.download = "parsel-yedek-" + stamp + ".json";
+            a.click();
+            URL.revokeObjectURL(a.href);
+        }
+
+        document.getElementById("btn-refresh").addEventListener("click", load);
+        document.getElementById("btn-export").addEventListener("click", async () => {
+            clearError();
+            try {
+                const db = await openDb();
+                const all = await getAllParcels(db);
+                db.close();
+                if (all.length === 0) {
+                    if (!confirm("Depoda 0 kayıt var — indirilecek dosya yalnızca boş [] olacak. Yine de indirilsin mi?")) return;
+                }
+                downloadJson(all);
+            } catch (e) {
+                showError(String(e && e.message ? e.message : e));
+            }
+        });
+
+        document.getElementById("btn-import-trigger").addEventListener("click", () => {
+            document.getElementById("file-import-json").click();
+        });
+        document.getElementById("file-import-json").addEventListener("change", async () => {
+            const inp = document.getElementById("file-import-json");
+            if (!inp.files || !inp.files[0]) return;
+            const file = inp.files[0];
+            inp.value = "";
+            clearError();
+            let text = "";
+            try {
+                text = await file.text();
+            } catch (e) {
+                showError(String(e && e.message ? e.message : e));
+                return;
+            }
+            let data;
+            try {
+                data = JSON.parse(text);
+            } catch (e) {
+                showError("Geçersiz JSON: " + (e && e.message ? e.message : e));
+                return;
+            }
+            if (!Array.isArray(data)) {
+                showError("Kök bir dizi (array) olmalı — Verikontrol dışa aktarma formatı.");
+                return;
+            }
+            if (data.length === 0) {
+                showError(
+                    "Bu dosya boş dizi [] — içinde parsel yok. Not defteriyle açın: yalnızca köşeli parantez ve virgül yoksa yedek boştur."
+                );
+                return;
+            }
+            const valid = data.filter((raw) => {
+                const rec = normalizeParcelRecordLoose(raw);
+                return rec && rec.id && rec.geojson;
+            });
+            if (valid.length === 0) {
+                showError("Dizide geçerli kayıt yok (her kayıtta id ve geojson gerekli).");
+                return;
+            }
+            if (!confirm(`${valid.length} kayıt bu tarayıcı deposuna yazılacak (aynı id üzerine yazılır). Devam?`)) return;
+            try {
+                const db = await openDb();
+                const written = await putParcelsBatch(db, data);
+                db.close();
+                await load();
+                if (written < data.length) {
+                    showError(
+                        `Yazıldı: ${written} / ${data.length} (kalanında id veya geojson eksik). Liste yenilendi.`
+                    );
+                }
+            } catch (e) {
+                showError(String(e && e.message ? e.message : e));
+            }
+        });
+
+        load();
+    </script>
+</body>
+</html>

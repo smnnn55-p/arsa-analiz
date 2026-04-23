@@ -1,0 +1,41 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function hasEmail() {
+      return request.auth != null
+        && request.auth.token.email != null
+        && request.auth.token.email != "";
+    }
+
+    function emailKey() {
+      return request.auth.token.email.lower();
+    }
+
+    function hasRoleDoc() {
+      return hasEmail() && firestore.exists(/databases/(default)/documents/email_roles/$(emailKey()));
+    }
+
+    function roleOfEmail() {
+      return !hasEmail()
+        ? "viewer"
+        : (hasRoleDoc()
+            ? firestore.get(/databases/(default)/documents/email_roles/$(emailKey())).data.role
+            : "viewer");
+    }
+
+    function isEditorOrAdmin() {
+      return hasEmail() && (roleOfEmail() == "editor" || roleOfEmail() == "admin");
+    }
+
+    /** Parsel GeoJSON ve ek dosyaları: herkes okur, editor/admin yazar. */
+    match /parcels/{parcelId}/{allPaths=**} {
+      allow read: if isSignedIn();
+      allow write: if isEditorOrAdmin();
+    }
+  }
+}

@@ -1,0 +1,71 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function hasEmail() {
+      return request.auth != null
+        && request.auth.token.email != null
+        && request.auth.token.email != "";
+    }
+
+    function isSelf(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function emailKey() {
+      return request.auth.token.email.lower();
+    }
+
+    function hasRoleDoc() {
+      return hasEmail() && exists(/databases/$(database)/documents/email_roles/$(emailKey()));
+    }
+
+    function roleOfEmail() {
+      return !hasEmail()
+        ? "viewer"
+        : (hasRoleDoc()
+            ? get(/databases/$(database)/documents/email_roles/$(emailKey())).data.role
+            : "viewer");
+    }
+
+    function isEditorOrAdmin() {
+      return hasEmail() && (roleOfEmail() == "editor" || roleOfEmail() == "admin");
+    }
+
+    function isAdmin() {
+      return hasEmail() && roleOfEmail() == "admin";
+    }
+
+    match /email_roles/{email} {
+      allow read: if hasEmail();
+      allow write: if isAdmin();
+    }
+
+    /** Kullanıcı profili: herkes kendi profilini okuyabilir, rol alanını yalnızca admin değiştirebilir. */
+    match /users/{userId} {
+      allow read: if isSelf(userId) || isAdmin();
+      allow create: if isSelf(userId);
+      allow update: if isAdmin() || (
+        isSelf(userId) &&
+        request.resource.data.role == resource.data.role
+      );
+      allow delete: if isAdmin();
+    }
+
+    /** Marker verileri: herkes okuyabilir, sadece editor/admin yazabilir. */
+    match /arsa_markers/{markerId} {
+      allow read: if isSignedIn();
+      allow write: if isEditorOrAdmin();
+    }
+
+    /** Parsel meta verisi: herkes okuyabilir, sadece editor/admin yazabilir. */
+    match /parcels/{parcelId} {
+      allow read: if isSignedIn();
+      allow write: if isEditorOrAdmin();
+    }
+  }
+}

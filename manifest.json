@@ -1,0 +1,20 @@
+{
+  "name": "Arsa Analiz Portalı",
+  "short_name": "ArsaAnaliz",
+  "start_url": "ARSA_ANALIZ.html",
+  "display": "standalone",
+  "background_color": "#1a252f",
+  "theme_color": "#e67e22",
+  "icons": [
+    {
+      "src": "https://via.placeholder.com/192",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://via.placeholder.com/512",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
