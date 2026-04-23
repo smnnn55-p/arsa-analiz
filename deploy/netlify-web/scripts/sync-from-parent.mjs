@@ -1,7 +1,7 @@
 /**
- * Repo kökündeki ARSA_ANALIZ.html ve statik varlıkları bu klasöre kopyalar.
- * Netlify build sırasında çalışır; çıktı publish = "." olur.
- * Konum: deploy/netlify-web/scripts/ → repo kökü üç seviye yukarı.
+ * Repo kokundeki index.html ve statik varliklari bu klasore kopyalar.
+ * Netlify build sirasinda calisir; cikti publish = "." olur.
+ * Konum: deploy/netlify-web/scripts/ -> repo koku uc seviye yukari.
  */
 import fs from "fs";
 import path from "path";
@@ -11,7 +11,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const pkgRoot = path.resolve(__dirname, "..");
 const repoRoot = path.resolve(__dirname, "../../..");
 
-const htmlSrc = path.join(repoRoot, "ARSA_ANALIZ.html");
+const htmlSrc = path.join(repoRoot, "index.html");
 if (!fs.existsSync(htmlSrc)) {
     console.error("Bulunamadı (repo kökünde olmalı):", htmlSrc);
     process.exit(1);

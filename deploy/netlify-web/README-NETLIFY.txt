@@ -5,7 +5,7 @@ Bu klasör APK veya mobile/ ile karışmaz. Android derlemesi: yine mobile/ kull
 
 GitHub’a ne yüklenir?
 ---------------------
-• Tüm repo (önerilen): ARSA_ANALIZ.html, boundaries/, deploy/netlify-web/ vb.
+• Tum repo (onerilen): index.html, boundaries/, deploy/netlify-web/ vb.
   Netlify’da “Base directory” = deploy/netlify-web
 
 • Sadece bu paketi taşıyorsanız: sync’i kendi bilgisayarınızda çalıştırıp üretilen
