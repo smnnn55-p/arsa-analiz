@@ -195,6 +195,7 @@
             z-index: 2100;
             top: 52px;
             right: 12px;
+            transform: none;
             width: min(400px, calc(100vw - 24px));
             max-height: min(82vh, 640px);
             display: flex;
@@ -600,48 +601,64 @@
         }
         #parcel-veri-modal-footer button {
             flex: 1;
-            min-width: 120px;
-            padding: 10px;
+            min-width: 96px;
+            padding: 8px 10px;
             border: none;
             border-radius: 6px;
             font-weight: 700;
+            font-size: 0.78rem;
             cursor: pointer;
+        }
+        #parcel-veri-modal-kapat {
+            background: #7f8c8d;
+            color: #fff;
         }
         #parcel-veri-modal-kaydet-kapat {
             background: #27ae60;
             color: #fff;
         }
         .parcel-detail-actions {
+            position: fixed;
+            z-index: 2110;
+            top: 52px;
+            right: 12px;
+            width: 150px;
             display: flex;
+            flex-direction: column;
             gap: 8px;
-            padding: 12px 4px 8px;
-            border-top: 1px solid #dee4ea;
-            background: #f4f6f8;
-            align-items: center;
-            justify-content: center;
+            padding: 10px;
+            border: 1px solid #d5dde6;
+            border-radius: 12px;
+            background: rgba(244, 246, 248, 0.97);
+            box-shadow: 0 10px 26px rgba(0, 0, 0, 0.24);
+        }
+        .parcel-detail-actions.parcel-detail-panel--hidden {
+            display: none !important;
         }
         .parcel-detail-actions button {
             min-width: 0;
-            padding: 10px 12px;
+            width: 100%;
+            padding: 10px 10px;
             border: none;
             border-radius: 8px;
             font-weight: 700;
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             cursor: pointer;
         }
         .parcel-detail-actions-main {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             flex: 1;
-            justify-content: center;
+            width: 100%;
+            flex-direction: column;
+            justify-content: flex-start;
         }
         .parcel-detail-actions-main button {
-            min-width: 120px;
+            min-width: 0;
         }
         .parcel-nav-btn {
-            width: 40px;
-            height: 40px;
-            flex-shrink: 0;
+            width: 100%;
+            height: 36px;
             font-size: 1.1rem;
             line-height: 1;
             padding: 0;
@@ -1197,6 +1214,33 @@
         #parcel-docs-section .doc-saved-hint:empty {
             display: none;
         }
+        #parcel-docs-section .doc-saved-hint .doc-existing-list {
+            margin-top: 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        #parcel-docs-section .doc-saved-hint .doc-existing-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #c8f4ec;
+        }
+        #parcel-docs-section .doc-saved-hint .doc-existing-name {
+            flex: 1;
+            font-size: 0.72rem;
+            overflow-wrap: anywhere;
+        }
+        #parcel-docs-section .doc-saved-hint .doc-remove-existing {
+            border: 1px solid #e74c3c;
+            background: #fff5f5;
+            color: #c0392b;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            cursor: pointer;
+        }
         #parcel-docs-section .doc-row input[type="file"] {
             flex: 1;
             min-width: 0;
@@ -1567,9 +1611,28 @@
                 top: auto;
                 bottom: max(10px, env(safe-area-inset-bottom, 10px));
                 left: 8px;
-                right: 8px;
-                width: auto;
+                right: auto;
+                transform: none;
+                width: calc(100vw - 118px);
+                max-width: 520px;
                 max-height: min(58vh, 520px);
+            }
+            .parcel-detail-actions {
+                top: auto;
+                bottom: max(10px, env(safe-area-inset-bottom, 10px));
+                right: 8px;
+                width: 88px;
+                padding: 8px 6px;
+                gap: 6px;
+            }
+            .parcel-detail-actions button {
+                font-size: 0.68rem;
+                padding: 8px 4px;
+                border-radius: 7px;
+            }
+            .parcel-nav-btn {
+                height: 34px;
+                font-size: 1rem;
             }
             .parcel-add-bar {
                 margin-bottom: calc(8px + env(safe-area-inset-bottom, 0)) !important;
@@ -1670,15 +1733,16 @@
                     <tbody id="parcel-detail-tbody"></tbody>
                 </table>
             </div>
-            <div class="parcel-detail-actions">
-                <button type="button" id="btn-parcel-prev" class="parcel-nav-btn" title="Önceki parsel">←</button>
-                <div class="parcel-detail-actions-main">
-                    <button type="button" id="btn-parcel-veri-gir-open">Veri gir</button>
-                    <button type="button" id="btn-parcel-verileri-gor">Verileri gör</button>
-                </div>
-                <button type="button" id="btn-parcel-next" class="parcel-nav-btn" title="Sonraki parsel">→</button>
-            </div>
         </div>
+    </div>
+    <div id="parcel-detail-action-panel" class="parcel-detail-actions parcel-detail-panel--hidden" aria-label="Parsel işlem düğmeleri">
+        <button type="button" id="btn-parcel-prev" class="parcel-nav-btn" title="Önceki parsel">←</button>
+        <div class="parcel-detail-actions-main">
+            <button type="button" id="btn-parcel-veri-gir-open">Veri gir</button>
+            <button type="button" id="btn-parcel-verileri-gor">Verileri gör</button>
+            <button type="button" id="btn-parcel-delete" class="btn-del">Parseli sil</button>
+        </div>
+        <button type="button" id="btn-parcel-next" class="parcel-nav-btn" title="Sonraki parsel">→</button>
     </div>
 </div>
 
@@ -1788,6 +1852,7 @@
                     </div>
                 </div>
                 <div id="parcel-veri-modal-footer">
+                    <button type="button" id="parcel-veri-modal-kapat">Kapat</button>
                     <button type="button" id="parcel-veri-modal-kaydet-kapat">Kaydet ve kapat</button>
                 </div>
             </div>
@@ -1856,7 +1921,7 @@
         signInAnonymously,
         signOut
     } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
-    import { getStorage, ref, uploadString, uploadBytes, getBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-storage.js";
+    import { getStorage, ref, uploadString, uploadBytes, getBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-storage.js";
     import osmtogeojson from "https://esm.sh/osmtogeojson@3.0.0-beta.5?bundle";
     import { kml as kmlToGeoJSON } from "https://esm.sh/@tmcw/togeojson@5.8.1";
 
@@ -1901,7 +1966,7 @@
     const USERS_COLLECTION = "users";
     const EMAIL_ROLES_COLLECTION = "email_roles";
     const LS_MARKERS_KEY = "arsa_analiz_markers_fallback";
-    const WRITE_ROLES = new Set(["admin", "editor"]);
+    const WRITE_ROLES = new Set(["admin"]);
     let currentUserRole = "viewer";
     let currentUserUid = "";
     let currentUserEmail = "";
@@ -1972,6 +2037,10 @@
         return WRITE_ROLES.has(currentUserRole);
     }
 
+    function hasAdminPermission() {
+        return currentUserRole === "admin";
+    }
+
     function applyReadOnlyUiState() {
         const can = hasWritePermission();
         const roHint = "Yönetici girişi (e-posta + şifre) gerekir.";
@@ -1986,6 +2055,13 @@
         setBtn("btn-parcel-veri-gir-open", "Veri gir yalnız yönetici hesabıyla kullanılabilir.");
         setBtn("btn-open-assoc-popup", "İlişkilendirme yalnız yönetici hesabıyla yapılabilir.");
         setBtn("pam-save", "Parsel kaydı yalnız yönetici hesabıyla yapılabilir.");
+        const btnParcelDelete = document.getElementById("btn-parcel-delete");
+        if (btnParcelDelete) {
+            const canAdminDelete = hasAdminPermission();
+            btnParcelDelete.disabled = !canAdminDelete;
+            btnParcelDelete.style.opacity = canAdminDelete ? "1" : "0.45";
+            btnParcelDelete.title = canAdminDelete ? "" : "Parsel silme yalnız admin hesabıyla yapılabilir.";
+        }
         const mfSave = document.querySelector("#marker-form button[type=\"submit\"]");
         if (mfSave) {
             mfSave.disabled = !can;
@@ -2434,6 +2510,21 @@
         yapi_yogunluk_kot: "Yapı yoğunluğu, kot ve emsal uygunluğu",
         kurum_gorus: "Kurum görüşü ve yazışmalar (DSİ, Kültür, sit vb.)",
         ek4_kriter_tablosu: "EK-4 arsa seçim kriterleri tablosu / formu (PDF)"
+    };
+    const PARCEL_ATTACH_SHORT_LABELS = {
+        imar: "İmar durumu",
+        plankote: "Plankote",
+        plan: "Plan",
+        ruhsat: "Ruhsat",
+        halihazir: "Halihazır",
+        mulkiyet_kadastro: "Mülkiyet/Kadastro",
+        pafta_geometri: "Pafta/Geometri",
+        ulasim_erisim: "Ulaşım/Erişim",
+        jeoloji_zemin: "Jeoloji/Zemin",
+        altyapi_cevre_risk: "Altyapı/Risk",
+        yapi_yogunluk_kot: "Yoğunluk/Kot/Emsal",
+        kurum_gorus: "Kurum görüşü",
+        ek4_kriter_tablosu: "EK-4 kriter"
     };
     const MAX_PARCEL_ATTACH_BYTES = 6 * 1024 * 1024;
 
@@ -3275,6 +3366,39 @@ out geom;
         return [];
     }
 
+    function listParcelGeojsonPathCandidatesFromCloudData(data) {
+        if (!data || typeof data !== "object") return [];
+        return [
+            data.geojsonStoragePath,
+            data.geojson_storage_path,
+            data.geojsonPath,
+            data.geometryStoragePath,
+            data.geometry_path
+        ].filter(Boolean);
+    }
+
+    function collectParcelStoragePaths(rec, cloudData) {
+        const out = new Set();
+        if (rec && rec.id) out.add(`parcels/${rec.id}/geometry.geojson`);
+        const ax = rec && rec.attachments && typeof rec.attachments === "object" ? rec.attachments : {};
+        for (const kind of Object.keys(ax)) {
+            const list = normalizeAttachmentList(ax[kind]);
+            for (const f of list) {
+                if (f && f.storagePath) out.add(String(f.storagePath));
+            }
+        }
+        const cd = cloudData && typeof cloudData === "object" ? cloudData : {};
+        for (const p of listParcelGeojsonPathCandidatesFromCloudData(cd)) out.add(String(p));
+        const metaRoot = cd.attachmentsMeta && typeof cd.attachmentsMeta === "object" ? cd.attachmentsMeta : {};
+        for (const kind of Object.keys(metaRoot)) {
+            const metas = metaListFromFirestoreAttachments(metaRoot[kind]);
+            for (const m of metas) {
+                if (m && m.storagePath) out.add(String(m.storagePath));
+            }
+        }
+        return [...out].filter(Boolean);
+    }
+
     async function syncParcelToCloud(payload) {
         const id = payload.id;
         const parsed = parseParcelStoredGeojson(payload);
@@ -3440,13 +3564,7 @@ out geom;
         let geojson = null;
         let source = "none";
         try {
-            const pathCandidates = [
-                data.geojsonStoragePath,
-                data.geojson_storage_path,
-                data.geojsonPath,
-                data.geometryStoragePath,
-                data.geometry_path
-            ].filter(Boolean);
+            const pathCandidates = listParcelGeojsonPathCandidatesFromCloudData(data);
             if (pathCandidates.length) {
                 let got = false;
                 for (const cand of pathCandidates) {
@@ -3649,6 +3767,158 @@ out geom;
         await parcelDbPutOnly(toStore);
     }
 
+    async function deleteParcelCompletelyById(id) {
+        const recId = String(id || "").trim();
+        if (!recId) return;
+        try {
+            await ensureUserProfileAndRole();
+        } catch (e) {
+            await showAppAlert("Yetki", String((e && e.message) || e));
+            return;
+        }
+        if (!hasAdminPermission()) {
+            await showAppAlert("Yetki yok", "Parsel silme işlemi sadece admin kullanıcılar için açıktır.");
+            return;
+        }
+        const ok = await showActionSheet({
+            title: "Parseli sil",
+            message: "Bu parsel ve parsel içinde girilmiş tüm veriler kalıcı olarak silinsin mi?",
+            buttons: [
+                { label: "Vazgeç", value: false },
+                { label: "Parseli sil", value: true, destructive: true, primary: true }
+            ]
+        });
+        if (!ok) return;
+
+        let localRec = null;
+        try {
+            localRec = await getParcelById(recId);
+        } catch (e) {
+            console.warn("Parsel yerel kayıt okunamadı (silme öncesi):", recId, e);
+        }
+        if (!localRec) localRec = { id: recId };
+
+        const cloudErrors = [];
+        try {
+            const cloudRef = doc(db, PARCELS_COLLECTION, recId);
+            const cloudSnap = await getDoc(cloudRef);
+            const cloudData = cloudSnap.exists() ? cloudSnap.data() || {} : {};
+            const storagePaths = collectParcelStoragePaths(localRec, cloudData);
+            for (const p of storagePaths) {
+                const sref = storageRefFromAnyPath(p);
+                if (!sref) continue;
+                try {
+                    await deleteObject(sref);
+                } catch (e) {
+                    const code = e && e.code ? String(e.code) : "";
+                    if (code === "storage/object-not-found") continue;
+                    cloudErrors.push("storage " + p + ": " + String(e && e.message ? e.message : e));
+                }
+            }
+            if (cloudSnap.exists()) {
+                await deleteDoc(cloudRef);
+            }
+        } catch (e) {
+            cloudErrors.push("firestore: " + String(e && e.message ? e.message : e));
+        }
+
+        try {
+            await deleteParcelRecordById(recId);
+        } catch (e) {
+            await showAppAlert("Parsel silinemedi", String((e && e.message) || e));
+            return;
+        }
+        removeParcelLayerFromMap(recId);
+        await refreshParcelPanel();
+        hideParcelDocEditor();
+
+        if (cloudErrors.length) {
+            await updateAppStatusLine(
+                "Parsel silindi (yerel). Bulut temizliğinde hata: " + cloudErrors[0],
+                "#f39c12"
+            );
+            return;
+        }
+        await updateAppStatusLine("Parsel ve ilişkili veriler silindi.", "#1dd1a1");
+    }
+
+    async function deleteSingleParcelAttachment(parcelId, kind, fileIndex) {
+        const recId = String(parcelId || "").trim();
+        const k = String(kind || "").trim();
+        const idx = Number(fileIndex);
+        if (!recId || !k || !Number.isInteger(idx) || idx < 0) return false;
+        try {
+            await ensureUserProfileAndRole();
+        } catch (e) {
+            await showAppAlert("Yetki", String((e && e.message) || e));
+            return false;
+        }
+        if (!hasAdminPermission()) {
+            await showAppAlert("Yetki yok", "Belge silme işlemi sadece admin kullanıcılar için açıktır.");
+            return false;
+        }
+        const rec = await getParcelById(recId);
+        if (!rec) {
+            await showAppAlert("Parsel", "Parsel kaydı bulunamadı.");
+            return false;
+        }
+        const n = normalizeParcelRecord(rec);
+        const ax = n.attachments && typeof n.attachments === "object" ? { ...n.attachments } : {};
+        const list = normalizeAttachmentList(ax[k]);
+        if (!list.length || idx >= list.length) {
+            await showAppAlert("Belge", "Silinecek dosya bulunamadı.");
+            return false;
+        }
+        const target = list[idx];
+        const targetName = String((target && target.name) || "dosya");
+        const ok = await showActionSheet({
+            title: "Belgeyi sil",
+            message: targetName + " dosyası bu parselden kalıcı olarak silinsin mi?",
+            buttons: [
+                { label: "Vazgeç", value: false },
+                { label: "Sil", value: true, destructive: true, primary: true }
+            ]
+        });
+        if (!ok) return false;
+
+        const nextList = list.filter((_, i) => i !== idx);
+        if (nextList.length === 0) {
+            delete ax[k];
+        } else if (nextList.length === 1) {
+            ax[k] = nextList[0];
+        } else {
+            ax[k] = nextList;
+        }
+        const next = normalizeParcelRecord({
+            ...n,
+            attachments: ax
+        });
+
+        let storageDeleteErr = null;
+        if (target && target.storagePath) {
+            try {
+                const sref = storageRefFromAnyPath(target.storagePath);
+                if (sref) await deleteObject(sref);
+            } catch (e) {
+                const code = e && e.code ? String(e.code) : "";
+                if (code !== "storage/object-not-found") {
+                    storageDeleteErr = String((e && e.message) || e);
+                }
+            }
+        }
+
+        await putParcelRecord(next);
+        if (parcelDetailSessionRec && parcelDetailSessionRec.id === recId) {
+            parcelDetailSessionRec = normalizeParcelRecord(next);
+        }
+        if (storageDeleteErr) {
+            await updateAppStatusLine("Belge kayıttan silindi; storage temizliği hatası: " + storageDeleteErr, "#f39c12");
+        } else {
+            await updateAppStatusLine("Belge parselden silindi.", "#1dd1a1");
+        }
+        return true;
+    }
+
     /** İç kayıt anahtarı (slug) yerine kartta gösterilecek kısa özet. */
     function formatParcelHumanSummary(rec) {
         if (!rec || typeof rec !== "object") return "";
@@ -3770,6 +4040,23 @@ out geom;
         "subprovince",
         "ilcemerkez",
         "ilcemerkezi"
+    ]);
+    const PARCEL_DETAIL_MAH_NK = parcelDetailNormKeySet([
+        "mahalle",
+        "mahalleadi",
+        "mahalleadı",
+        "mahallemi",
+        "bulundugumahalle",
+        "bulunduğumahalle",
+        "yerlesimbirimiadi",
+        "yerleşimbirimiadi",
+        "yerlesimbirimi",
+        "yermahalle",
+        "koy",
+        "köy",
+        "koyadi",
+        "köyadi",
+        "koyadiadi"
     ]);
     const PARCEL_DETAIL_ADA_NK = parcelDetailNormKeySet([
         "ada",
@@ -3992,7 +4279,7 @@ out geom;
     }
 
     /**
-     * Parsel kartı / özet: İl, ilçe, ada, parsel, alan, nitelik — her biri en fazla bir satır (tekrar yok).
+     * Parsel kartı / özet: İl, ilçe, mahalle/köy, ada, parsel, alan, nitelik — her biri en fazla bir satır (tekrar yok).
      * Önce kayıt (rec), yoksa birleşik GeoJSON özellikleri.
      */
     function buildParcelDetailRows(rec, feature) {
@@ -4032,6 +4319,13 @@ out geom;
                 if (nk.includes("ilce") && nk.includes("kod")) return false;
                 if (!PARCEL_DETAIL_ILCE_NK.has(nk)) return false;
                 return t.length >= 2 && !/^\d{1,6}$/.test(t);
+            });
+        }
+        let mahalle = ts(rec.mahalle);
+        if (!mahalle) {
+            mahalle = firstMergedPropValue(mergedProps, (nk, t) => {
+                if (!PARCEL_DETAIL_MAH_NK.has(nk)) return false;
+                return t.length >= 2 && !/^\d{1,10}$/.test(t);
             });
         }
 
@@ -4077,6 +4371,7 @@ out geom;
 
         add("İl", il);
         add("İlçe", ilce);
+        add("Mahalle/Köy", mahalle);
         add("Ada", ada);
         add("Parsel", parsel);
         add("Alan (m²)", alan);
@@ -4790,12 +5085,17 @@ out geom;
         for (const [kind, label] of Object.entries(PARCEL_ATTACH_LABELS)) {
             const files = normalizeAttachmentList(ax[kind]);
             if (!files.length) continue;
+            const shortLabel = PARCEL_ATTACH_SHORT_LABELS[kind] || label;
             docCount++;
             const btn = document.createElement("button");
             btn.type = "button";
             btn.className = "parcel-vgor-doc-line";
-            btn.textContent = label;
-            btn.addEventListener("click", () => void showParcelVeriGorDocPreview(label, files));
+            btn.textContent = shortLabel;
+            btn.addEventListener("click", async () => {
+                const target = parcelVgorDocFlow.findIndex((it) => it && it.kind === kind);
+                if (target >= 0) await showParcelVgorDocFlowAt(target);
+                else await showParcelVeriGorDocPreview(label, files);
+            });
             btn.addEventListener("dblclick", () => void openParcelVeriGorFullscreen(label, files, 0));
             docButtons.appendChild(btn);
         }
@@ -4815,6 +5115,9 @@ out geom;
     function wireParcelVeriGorModalOnce() {
         if (wireParcelVeriGorModalOnce._done) return;
         wireParcelVeriGorModalOnce._done = true;
+        window.addEventListener("resize", () => {
+            if (openParcelDetailRecId) scheduleParcelMapLayoutReflow();
+        });
         const back = document.getElementById("parcel-vgor-back-list");
         if (back) back.addEventListener("click", closeParcelVeriGorModalUI);
         const fs = document.getElementById("parcel-vgor-open-fs");
@@ -4999,6 +5302,8 @@ out geom;
     function hideParcelDetailPanel() {
         const el = document.getElementById("parcel-detail-panel");
         if (el) el.classList.add("parcel-detail-panel--hidden");
+        const action = document.getElementById("parcel-detail-action-panel");
+        if (action) action.classList.add("parcel-detail-panel--hidden");
         const bl = document.getElementById("parcel-detail-blocker");
         if (bl) bl.classList.add("parcel-detail-blocker--hidden");
         openParcelDetailRecId = null;
@@ -5007,6 +5312,7 @@ out geom;
         updateActiveRecordBadge();
         closeParcelVeriGorModalUI();
         void closeParcelVeriGirModal({ skipPendingPrompt: true });
+        scheduleParcelMapLayoutReflow();
     }
 
     function extractSyntheticFeatureFromLayer(layer) {
@@ -5040,8 +5346,16 @@ out geom;
         const panelCenterY = pr.top + pr.height / 2;
         const mapCenterX = mr.left + mr.width / 2;
         const mapCenterY = mr.top + mr.height / 2;
+        const overlapXRatio = mr.width > 0 ? ix / mr.width : 0;
+        const overlapYRatio = mr.height > 0 ? iy / mr.height : 0;
 
-        if (panelCenterY > mapCenterY + mr.height * 0.12) {
+        if (overlapXRatio >= 0.62) {
+            if (panelCenterY >= mapCenterY) base.bottomRight[1] += Math.round(iy + extra);
+            else base.topLeft[1] += Math.round(iy + extra);
+        } else if (overlapYRatio >= 0.62) {
+            if (panelCenterX >= mapCenterX) base.bottomRight[0] += Math.round(ix + extra);
+            else base.topLeft[0] += Math.round(ix + extra);
+        } else if (panelCenterY > mapCenterY + mr.height * 0.12) {
             base.bottomRight[1] += Math.round(iy + extra);
         } else if (panelCenterY < mapCenterY - mr.height * 0.12) {
             base.topLeft[1] += Math.round(iy + extra);
@@ -5051,6 +5365,18 @@ out geom;
             base.topLeft[0] += Math.round(ix + extra);
         }
         return base;
+    }
+
+    let _parcelMapRefitTimer = null;
+    function scheduleParcelMapLayoutReflow() {
+        if (_parcelMapRefitTimer) clearTimeout(_parcelMapRefitTimer);
+        _parcelMapRefitTimer = setTimeout(() => {
+            _parcelMapRefitTimer = null;
+            try {
+                map.invalidateSize({ pan: false, animate: false });
+            } catch (_) {}
+            if (openParcelDetailRecId) focusParcelLayerOnMapById(openParcelDetailRecId);
+        }, 70);
     }
 
     function focusParcelLayerOnMapById(id) {
@@ -5177,7 +5503,9 @@ out geom;
         }
         if (bl) bl.classList.remove("parcel-detail-blocker--hidden");
         el.classList.remove("parcel-detail-panel--hidden");
-        if (openParcelDetailRecId) focusParcelLayerOnMapById(openParcelDetailRecId);
+        const action = document.getElementById("parcel-detail-action-panel");
+        if (action) action.classList.remove("parcel-detail-panel--hidden");
+        scheduleParcelMapLayoutReflow();
     }
 
     let parcelDetailMapHooksInstalled = false;
@@ -5235,10 +5563,23 @@ out geom;
         if (btnGor) {
             btnGor.addEventListener("click", () => void openParcelVeriGorModal());
         }
+        const btnParcelDelete = document.getElementById("btn-parcel-delete");
+        if (btnParcelDelete) {
+            btnParcelDelete.addEventListener("click", async () => {
+                const rec = parcelDetailSessionRec;
+                if (!rec || !rec.id) {
+                    await showAppAlert("Parsel", "Önce haritada bir parsel seçin.");
+                    return;
+                }
+                await deleteParcelCompletelyById(rec.id);
+            });
+        }
         const blocker = document.getElementById("parcel-detail-blocker");
         if (blocker) blocker.addEventListener("click", (e) => e.preventDefault());
         const mx = document.getElementById("parcel-veri-modal-close-x");
         if (mx) mx.addEventListener("click", () => void closeParcelVeriGirModal());
+        const mc = document.getElementById("parcel-veri-modal-kapat");
+        if (mc) mc.addEventListener("click", () => void closeParcelVeriGirModal());
         const mk = document.getElementById("parcel-veri-modal-kaydet-kapat");
         if (mk) {
             mk.addEventListener("click", () =>
@@ -5813,12 +6154,55 @@ out geom;
     function ensureDocRowSavedHintEl(row) {
         let el = row.querySelector(".doc-saved-hint");
         if (!el) {
-            el = document.createElement("span");
+            el = document.createElement("div");
             el.className = "doc-saved-hint";
             el.setAttribute("aria-live", "polite");
             row.appendChild(el);
         }
         return el;
+    }
+
+    function renderParcelVeriGirSavedFilesHint(hint, kind, files) {
+        if (!hint) return;
+        const list = Array.isArray(files) ? files : [];
+        hint.replaceChildren();
+        if (!list.length) {
+            hint.style.display = "none";
+            return;
+        }
+        const note = document.createElement("div");
+        note.textContent =
+            list.length === 1
+                ? "Veritabanında 1 dosya kayıtlı. Yeni dosya eklemek için «Ekle» / «Kaydet ve kapat»."
+                : "Veritabanında " + list.length + " dosya kayıtlı.";
+        hint.appendChild(note);
+
+        const wrap = document.createElement("div");
+        wrap.className = "doc-existing-list";
+        const canDel = hasAdminPermission();
+        for (let i = 0; i < list.length; i++) {
+            const f = list[i] || {};
+            const row = document.createElement("div");
+            row.className = "doc-existing-item";
+            const name = document.createElement("span");
+            name.className = "doc-existing-name";
+            const mime = f.mime ? " (" + String(f.mime) + ")" : "";
+            name.textContent = (i + 1) + ". " + String(f.name || "dosya") + mime;
+            row.appendChild(name);
+            const del = document.createElement("button");
+            del.type = "button";
+            del.className = "doc-remove-existing";
+            del.textContent = "Sil";
+            del.dataset.kind = String(kind || "");
+            del.dataset.index = String(i);
+            del.disabled = !canDel;
+            del.style.opacity = canDel ? "1" : "0.45";
+            del.title = canDel ? "Bu dosyayı sil" : "Silme sadece admin için açık";
+            row.appendChild(del);
+            wrap.appendChild(row);
+        }
+        hint.appendChild(wrap);
+        hint.style.display = "";
     }
 
     /** Veri gir paneli: veritabanındaki ekleri satırlarda gösterir (dosya inputu tarayıcı güvenliğiyle doldurulamaz). */
@@ -5844,27 +6228,7 @@ out geom;
             const kind = row.dataset.kind;
             const hint = ensureDocRowSavedHintEl(row);
             const files = kind ? normalizeAttachmentList(ax[kind]) : [];
-            if (files.length === 1) {
-                const att = files[0];
-                const mime = att.mime ? String(att.mime) : "";
-                hint.textContent =
-                    "Veritabanında kayıtlı: " +
-                    String(att.name) +
-                    (mime ? " (" + mime + ")" : "") +
-                    " — yeni dosya eklemek için «Ekle» / «Kaydet ve kapat» (aynı türde birden fazla dosya olabilir).";
-                hint.style.display = "";
-            } else if (files.length > 1) {
-                hint.textContent =
-                    "Veritabanında " +
-                    files.length +
-                    " dosya: " +
-                    files.map((f) => f.name).join(", ") +
-                    ".";
-                hint.style.display = "";
-            } else {
-                hint.textContent = "";
-                hint.style.display = "none";
-            }
+            renderParcelVeriGirSavedFilesHint(hint, kind, files);
         });
     }
 
@@ -5975,6 +6339,23 @@ out geom;
     }
 
     document.getElementById("parcel-doc-global").addEventListener("click", async (e) => {
+        const delBtn = e.target.closest(".doc-remove-existing");
+        if (delBtn) {
+            e.preventDefault();
+            e.stopPropagation();
+            const pid = activeParcelForDocsId;
+            const kind = delBtn.dataset.kind || "";
+            const idx = Number(delBtn.dataset.index);
+            if (!pid) {
+                await showAppAlert("Parsel", "Önce parsel seçin.");
+                return;
+            }
+            const changed = await deleteSingleParcelAttachment(pid, kind, idx);
+            if (changed) {
+                await openParcelDocEditorForParcelId(pid);
+            }
+            return;
+        }
         const btn = e.target.closest(".doc-upload");
         if (!btn) return;
         try {
