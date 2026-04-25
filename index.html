@@ -4567,48 +4567,44 @@ out geom;
         return mobileUa || narrow;
     }
 
-    function googlePdfViewerUrl(url) {
-        const u = String(url || "").trim();
-        if (!/^https?:\/\//i.test(u)) return "";
-        return "https://docs.google.com/gview?embedded=1&url=" + encodeURIComponent(u);
-    }
-
     function appendPdfOpenLink(parent, url, name) {
         const a = document.createElement("a");
         a.href = url;
         a.target = "_blank";
         a.rel = "noopener";
         a.download = name || undefined;
-        a.textContent = "PDF'yi yeni sekmede aç";
+        a.textContent = "PDF aç";
         a.style.display = "inline-block";
-        a.style.margin = "8px 0 0";
-        a.style.padding = "10px 12px";
+        a.style.margin = "0";
+        a.style.padding = "14px 20px";
         a.style.borderRadius = "8px";
         a.style.background = "#2980b9";
         a.style.color = "#fff";
         a.style.fontWeight = "700";
         a.style.textDecoration = "none";
+        a.style.textAlign = "center";
         a.addEventListener("click", saveParcelVeriGorResumeState);
         parent.appendChild(a);
         return a;
     }
 
+    function appendMobilePdfOpenPanel(parent, url, name) {
+        const wrap = document.createElement("div");
+        wrap.style.minHeight = "42vh";
+        wrap.style.display = "flex";
+        wrap.style.alignItems = "center";
+        wrap.style.justifyContent = "center";
+        wrap.style.border = "1px solid #dfe6e9";
+        wrap.style.borderRadius = "8px";
+        wrap.style.background = "#fff";
+        appendPdfOpenLink(wrap, url, name);
+        parent.appendChild(wrap);
+        return wrap;
+    }
+
     function appendPdfPreviewElement(parent, url, name, opts) {
-        const mobileViewer = shouldUseMobilePdfViewer() ? googlePdfViewerUrl(url) : "";
-        if (mobileViewer) {
-            const frame = document.createElement("iframe");
-            frame.src = mobileViewer;
-            frame.title = name || "PDF";
-            frame.loading = "lazy";
-            frame.referrerPolicy = "no-referrer";
-            frame.style.width = "100%";
-            frame.style.minHeight = opts && opts.fullscreen ? "85vh" : "62vh";
-            frame.style.border = "1px solid #dfe6e9";
-            frame.style.borderRadius = "8px";
-            frame.style.background = "#fff";
-            parent.appendChild(frame);
-            appendPdfOpenLink(parent, url, name);
-            return frame;
+        if (shouldUseMobilePdfViewer()) {
+            return appendMobilePdfOpenPanel(parent, url, name);
         }
         const em = document.createElement("embed");
         em.type = "application/pdf";
