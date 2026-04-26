@@ -5289,7 +5289,7 @@ out geom;
         clearPendingNoteAttachmentPreview();
         if (!file) return;
         try {
-            validateNoteAttachment(file);
+            validateNoteAttachment(file, { allowLargeImage: true });
         } catch (e) {
             if (input) input.value = "";
             void showAppAlert("Ek seçilemedi", String((e && e.message) || e));
@@ -5306,7 +5306,14 @@ out geom;
             box.appendChild(img);
         }
         const label = document.createElement("span");
-        label.textContent = "Ek seçildi: " + (file.name || "fotoğraf") + " (" + Math.round(file.size / 1024) + " KB)";
+        const willCompress = /^image\//.test(mime) && file.size > NOTE_ATTACHMENT_MAX_BYTES;
+        label.textContent =
+            "Ek seçildi: " +
+            (file.name || "fotoğraf") +
+            " (" +
+            Math.round(file.size / 1024) +
+            " KB)" +
+            (willCompress ? " · gönderirken küçültülecek" : "");
         const add = document.createElement("button");
         add.type = "button";
         add.className = "note-pending-add";
@@ -5329,23 +5336,79 @@ out geom;
         box.hidden = false;
     }
 
-    function validateNoteAttachment(file) {
+    function validateNoteAttachment(file, options = {}) {
         if (!file) return null;
         const mime = String(file.type || "").toLowerCase();
         const name = String(file.name || "dosya");
         const isAllowed = /^image\//.test(mime) || mime === "application/pdf" || /\.pdf$/i.test(name);
         if (!isAllowed) throw new Error("Not ekleri sadece resim veya PDF olabilir.");
-        if (file.size > NOTE_ATTACHMENT_MAX_BYTES) throw new Error("Not eki en fazla 500 KB olabilir.");
+        const allowLargeImage = !!(options && options.allowLargeImage && /^image\//.test(mime));
+        if (!allowLargeImage && file.size > NOTE_ATTACHMENT_MAX_BYTES) throw new Error("Not eki en fazla 500 KB olabilir.");
         return { name, mime: mime || "application/octet-stream", size: file.size };
     }
 
+    function imageFileToCanvasBlob(file, maxSide, quality) {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            const url = URL.createObjectURL(file);
+            img.onload = () => {
+                try {
+                    const ratio = Math.min(1, maxSide / Math.max(img.naturalWidth || img.width, img.naturalHeight || img.height));
+                    const w = Math.max(1, Math.round((img.naturalWidth || img.width) * ratio));
+                    const h = Math.max(1, Math.round((img.naturalHeight || img.height) * ratio));
+                    const canvas = document.createElement("canvas");
+                    canvas.width = w;
+                    canvas.height = h;
+                    const ctx = canvas.getContext("2d");
+                    ctx.drawImage(img, 0, 0, w, h);
+                    URL.revokeObjectURL(url);
+                    canvas.toBlob((blob) => {
+                        if (!blob) reject(new Error("Fotoğraf küçültülemedi."));
+                        else resolve(blob);
+                    }, "image/jpeg", quality);
+                } catch (e) {
+                    URL.revokeObjectURL(url);
+                    reject(e);
+                }
+            };
+            img.onerror = () => {
+                URL.revokeObjectURL(url);
+                reject(new Error("Fotoğraf okunamadı."));
+            };
+            img.src = url;
+        });
+    }
+
+    async function prepareNoteAttachmentFile(file) {
+        const meta = validateNoteAttachment(file, { allowLargeImage: true });
+        if (!/^image\//.test(meta.mime) || file.size <= NOTE_ATTACHMENT_MAX_BYTES) return file;
+        const attempts = [
+            [1280, 0.78],
+            [1024, 0.72],
+            [900, 0.66],
+            [760, 0.6],
+            [640, 0.55]
+        ];
+        let lastBlob = null;
+        for (const [maxSide, quality] of attempts) {
+            lastBlob = await imageFileToCanvasBlob(file, maxSide, quality);
+            if (lastBlob.size <= NOTE_ATTACHMENT_MAX_BYTES) break;
+        }
+        if (!lastBlob || lastBlob.size > NOTE_ATTACHMENT_MAX_BYTES) {
+            throw new Error("Fotoğraf 500 KB altına indirilemedi. Daha düşük çözünürlükte deneyin.");
+        }
+        const baseName = String(file.name || "foto").replace(/\.[^.]+$/, "");
+        return new File([lastBlob], baseName + ".jpg", { type: "image/jpeg" });
+    }
+
     async function attachNoteFile(noteId, file) {
-        const meta = validateNoteAttachment(file);
+        const preparedFile = await prepareNoteAttachmentFile(file);
+        const meta = validateNoteAttachment(preparedFile);
         if (!meta) return null;
         const safeName = meta.name.replace(/[^\w.\-ğüşöçıİĞÜŞÖÇ]+/gi, "_").slice(-90);
         const storagePath = `note_attachments/${currentUserUid}/${noteId}/${Date.now()}_${safeName}`;
         const fileRef = ref(storage, storagePath);
-        await uploadBytes(fileRef, file, { contentType: meta.mime });
+        await uploadBytes(fileRef, preparedFile, { contentType: meta.mime });
         const attachment = {
             storagePath,
             name: meta.name,
@@ -5518,7 +5581,7 @@ out geom;
             await showAppAlert("Ek", "Düzenleme sırasında dosya değiştirilemez. Yeni dosya için yeni mesaj gönderin.");
             return;
         }
-        if (file) validateNoteAttachment(file);
+        if (file) validateNoteAttachment(file, { allowLargeImage: true });
         if (activeNoteEditId) {
             await updateDoc(doc(db, NOTES_COLLECTION, activeNoteEditId), {
                 text,
