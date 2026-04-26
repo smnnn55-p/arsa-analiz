@@ -5,7 +5,7 @@ Bu klasör APK veya mobile/ ile karışmaz. Android derlemesi: yine mobile/ kull
 
 GitHub’a ne yüklenir?
 ---------------------
-• Tum repo (onerilen): index.html, boundaries/, deploy/netlify-web/ vb.
+• Tum repo (onerilen): ARSA_ANALIZ.html, index.html, boundaries/, deploy/netlify-web/ vb.
   Netlify’da “Base directory” = deploy/netlify-web
 
 • Sadece bu paketi taşıyorsanız: sync’i kendi bilgisayarınızda çalıştırıp üretilen
@@ -25,7 +25,7 @@ Netlify ayarları
 2. Base directory: deploy/netlify-web
 3. Build command: (netlify.toml içindeki gibi) node scripts/sync-from-parent.mjs
 4. Publish directory: . (nokta)
-5. Deploy: her push’ta repo kökünden kopyalama yapılır → index.html güncel kalır
+5. Deploy: her push’ta repo kökündeki ARSA_ANALIZ.html kopyalanır → Netlify index.html güncel kalır
 
 Firebase
 --------

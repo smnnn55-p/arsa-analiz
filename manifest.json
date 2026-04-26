@@ -1,7 +1,7 @@
 {
   "name": "Arsa Analiz Portalı",
   "short_name": "ArsaAnaliz",
-  "start_url": "index.html",
+  "start_url": "ARSA_ANALIZ.html",
   "display": "standalone",
   "background_color": "#1a252f",
   "theme_color": "#e67e22",
