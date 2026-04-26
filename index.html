@@ -1112,6 +1112,52 @@
             background: rgba(11, 25, 34, 0.96);
             border-top: 1px solid rgba(255, 255, 255, 0.08);
         }
+        .note-compose-wrap {
+            flex-shrink: 0;
+            background: rgba(11, 25, 34, 0.96);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .note-pending-attachment {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 10px 0;
+            color: #ecf0f1;
+            font-size: 0.76rem;
+        }
+        .note-pending-attachment[hidden] {
+            display: none !important;
+        }
+        .note-pending-attachment img {
+            width: 42px;
+            height: 42px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: #fff;
+        }
+        .note-pending-attachment span {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .note-pending-attachment button {
+            flex-shrink: 0;
+            border: none;
+            border-radius: 8px;
+            padding: 6px 9px;
+            background: #34495e;
+            color: #fff;
+            font-weight: 800;
+            cursor: pointer;
+        }
+        .note-pending-attachment .note-pending-add {
+            background: #27ae60;
+        }
+        .note-pending-attachment .note-pending-remove {
+            background: #c0392b;
+        }
         .notes-form button,
         .admin-role-form button,
         .note-action-btn {
@@ -1135,6 +1181,7 @@
             align-items: center;
             justify-content: center;
             border-radius: 999px;
+            border: none;
             background: transparent;
             color: #6b7c86;
             font-size: 1.24rem;
@@ -2312,14 +2359,17 @@
                 <p id="parcel-notes-summary" class="notes-parcel-summary">Parsel seçilmedi.</p>
                 <p id="parcel-notes-auth-line" class="notes-auth-line">Notlar için mail ile giriş gerekir.</p>
                 <div id="parcel-notes-list" class="notes-list" aria-live="polite"></div>
-                <form id="parcel-notes-form" class="notes-form" autocomplete="off">
-                    <label for="parcel-note-camera" class="note-attach-btn note-camera-btn" title="Kamera">📷</label>
-                    <input type="file" id="parcel-note-camera" accept="image/*" capture="environment" />
-                    <label for="parcel-note-file" class="note-attach-btn" title="Resim/PDF ekle">📎</label>
-                    <input type="file" id="parcel-note-file" accept="image/*,.pdf,application/pdf" />
-                    <textarea id="parcel-note-text" maxlength="2000" placeholder="Mesaj"></textarea>
-                    <button type="submit" id="parcel-note-submit">Gönder</button>
-                </form>
+                <div class="note-compose-wrap">
+                    <div id="note-pending-attachment" class="note-pending-attachment" hidden></div>
+                    <form id="parcel-notes-form" class="notes-form" autocomplete="off">
+                        <button type="button" id="parcel-note-camera-btn" class="note-attach-btn note-camera-btn" title="Kamera">📷</button>
+                        <input type="file" id="parcel-note-camera" accept="image/*" capture="environment" />
+                        <button type="button" id="parcel-note-file-btn" class="note-attach-btn" title="Resim/PDF ekle">📎</button>
+                        <input type="file" id="parcel-note-file" accept="image/*,.pdf,application/pdf" />
+                        <textarea id="parcel-note-text" maxlength="2000" placeholder="Mesaj"></textarea>
+                        <button type="submit" id="parcel-note-submit">Gönder</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -2442,6 +2492,7 @@
     const WRITE_ROLES = new Set(["admin", "manager"]);
     const ROOT_ADMIN_EMAIL = "smnnn55@gmail.com";
     const NOTE_ATTACHMENT_MAX_BYTES = 500 * 1024;
+    let pendingNoteAttachmentUrl = "";
     let currentUserRole = "viewer";
     let currentUserUid = "";
     let currentUserEmail = "";
@@ -3271,9 +3322,31 @@
         if (notesForm) {
             notesForm.addEventListener("submit", (e) => {
                 e.preventDefault();
-                void saveParcelNoteFromForm().catch((err) => showAppAlert("Not kaydedilemedi", String((err && err.message) || err)));
+                void saveParcelNoteFromForm({ includeAttachment: false }).catch((err) =>
+                    showAppAlert("Not kaydedilemedi", String((err && err.message) || err))
+                );
             });
         }
+        const noteCamera = document.getElementById("parcel-note-camera");
+        const noteCameraBtn = document.getElementById("parcel-note-camera-btn");
+        if (noteCameraBtn && noteCamera) {
+            noteCameraBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                noteCamera.click();
+            });
+        }
+        if (noteCamera) noteCamera.addEventListener("change", () => updatePendingNoteAttachmentPreview("parcel-note-camera"));
+        const noteFile = document.getElementById("parcel-note-file");
+        const noteFileBtn = document.getElementById("parcel-note-file-btn");
+        if (noteFileBtn && noteFile) {
+            noteFileBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                noteFile.click();
+            });
+        }
+        if (noteFile) noteFile.addEventListener("change", () => updatePendingNoteAttachmentPreview("parcel-note-file"));
         const adminClose = document.getElementById("admin-role-close-x");
         if (adminClose) adminClose.addEventListener("click", closeAdminRoleModal);
         const adminModal = document.getElementById("admin-role-modal");
@@ -5168,6 +5241,7 @@ out geom;
         if (file) file.value = "";
         const camera = document.getElementById("parcel-note-camera");
         if (camera) camera.value = "";
+        clearPendingNoteAttachmentPreview();
         const btn = document.getElementById("parcel-note-submit");
         if (btn) btn.textContent = "Gönder";
     }
@@ -5198,6 +5272,70 @@ out geom;
 
     function canManageNote(note) {
         return hasAdminPermission() || (note && note.userId && note.userId === currentUserUid);
+    }
+
+    function clearPendingNoteAttachmentPreview() {
+        if (pendingNoteAttachmentUrl) {
+            try {
+                URL.revokeObjectURL(pendingNoteAttachmentUrl);
+            } catch (_) {}
+            pendingNoteAttachmentUrl = "";
+        }
+        const box = document.getElementById("note-pending-attachment");
+        if (box) {
+            box.hidden = true;
+            box.replaceChildren();
+        }
+    }
+
+    function updatePendingNoteAttachmentPreview(sourceInputId) {
+        const cameraInput = document.getElementById("parcel-note-camera");
+        const fileInput = document.getElementById("parcel-note-file");
+        if (sourceInputId === "parcel-note-camera" && fileInput) fileInput.value = "";
+        if (sourceInputId === "parcel-note-file" && cameraInput) cameraInput.value = "";
+        const input = document.getElementById(sourceInputId);
+        const file = input && input.files && input.files[0] ? input.files[0] : null;
+        clearPendingNoteAttachmentPreview();
+        if (!file) return;
+        try {
+            validateNoteAttachment(file);
+        } catch (e) {
+            if (input) input.value = "";
+            void showAppAlert("Ek seçilemedi", String((e && e.message) || e));
+            return;
+        }
+        const box = document.getElementById("note-pending-attachment");
+        if (!box) return;
+        const mime = String(file.type || "").toLowerCase();
+        if (/^image\//.test(mime)) {
+            pendingNoteAttachmentUrl = URL.createObjectURL(file);
+            const img = document.createElement("img");
+            img.alt = file.name || "Fotoğraf";
+            img.src = pendingNoteAttachmentUrl;
+            box.appendChild(img);
+        }
+        const label = document.createElement("span");
+        label.textContent = "Ek seçildi: " + (file.name || "fotoğraf") + " (" + Math.round(file.size / 1024) + " KB)";
+        const add = document.createElement("button");
+        add.type = "button";
+        add.className = "note-pending-add";
+        add.textContent = "Ekle";
+        add.addEventListener("click", () => {
+            void saveParcelNoteFromForm({ includeAttachment: true }).catch((err) =>
+                showAppAlert("Ek gönderilemedi", String((err && err.message) || err))
+            );
+        });
+        const clear = document.createElement("button");
+        clear.type = "button";
+        clear.className = "note-pending-remove";
+        clear.textContent = "Kaldır";
+        clear.addEventListener("click", () => {
+            if (cameraInput) cameraInput.value = "";
+            if (fileInput) fileInput.value = "";
+            clearPendingNoteAttachmentPreview();
+        });
+        box.append(label, add, clear);
+        box.hidden = false;
     }
 
     function validateNoteAttachment(file) {
@@ -5368,7 +5506,8 @@ out geom;
         await refreshParcelNotes();
     }
 
-    async function saveParcelNoteFromForm() {
+    async function saveParcelNoteFromForm(options = {}) {
+        const includeAttachment = !!(options && options.includeAttachment);
         const id = openParcelDetailRecId;
         const txt = document.getElementById("parcel-note-text");
         const fileInput = document.getElementById("parcel-note-file");
@@ -5376,7 +5515,12 @@ out geom;
         const text = String((txt && txt.value) || "").trim();
         const cameraFile = cameraInput && cameraInput.files && cameraInput.files[0] ? cameraInput.files[0] : null;
         const pickedFile = fileInput && fileInput.files && fileInput.files[0] ? fileInput.files[0] : null;
-        const file = cameraFile || pickedFile || null;
+        const pendingFile = cameraFile || pickedFile || null;
+        const file = includeAttachment ? pendingFile : null;
+        if (!includeAttachment && pendingFile && !text) {
+            await showAppAlert("Ek bekliyor", "Fotoğraf/PDF göndermek için önizlemedeki Ekle butonuna basın.");
+            return;
+        }
         if (!id || (!text && !file)) return;
         await ensureUserProfileAndRole();
         if (file && activeNoteEditId) {
@@ -5406,6 +5550,7 @@ out geom;
         if (txt) txt.value = "";
         if (fileInput) fileInput.value = "";
         if (cameraInput) cameraInput.value = "";
+        clearPendingNoteAttachmentPreview();
         const btn = document.getElementById("parcel-note-submit");
         if (btn) btn.textContent = "Gönder";
         await refreshParcelNotes();
