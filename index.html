@@ -1174,6 +1174,7 @@
             color: #fff;
         }
         .note-attach-btn {
+            position: relative;
             flex-shrink: 0;
             width: 34px;
             height: 42px;
@@ -1188,6 +1189,7 @@
             font-weight: 700;
             cursor: pointer;
             user-select: none;
+            overflow: hidden;
         }
         .note-attach-btn:hover {
             background: rgba(255, 255, 255, 0.14);
@@ -1203,11 +1205,14 @@
             border-radius: 21px;
             padding: 0 14px;
         }
-        #parcel-note-file {
-            display: none;
-        }
-        #parcel-note-camera {
-            display: none;
+        .note-attach-btn input[type="file"] {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+            font-size: 48px;
         }
         .notes-list {
             flex: 1;
@@ -2362,10 +2367,12 @@
                 <div class="note-compose-wrap">
                     <div id="note-pending-attachment" class="note-pending-attachment" hidden></div>
                     <form id="parcel-notes-form" class="notes-form" autocomplete="off">
-                        <button type="button" id="parcel-note-camera-btn" class="note-attach-btn note-camera-btn" title="Kamera">📷</button>
-                        <input type="file" id="parcel-note-camera" accept="image/*" capture="environment" />
-                        <button type="button" id="parcel-note-file-btn" class="note-attach-btn" title="Resim/PDF ekle">📎</button>
-                        <input type="file" id="parcel-note-file" accept="image/*,.pdf,application/pdf" />
+                        <label class="note-attach-btn note-camera-btn" title="Kamera">📷
+                            <input type="file" id="parcel-note-camera" accept="image/*" capture="environment" />
+                        </label>
+                        <label class="note-attach-btn" title="Resim/PDF ekle">📎
+                            <input type="file" id="parcel-note-file" accept="image/*,.pdf,application/pdf" />
+                        </label>
                         <textarea id="parcel-note-text" maxlength="2000" placeholder="Mesaj"></textarea>
                         <button type="submit" id="parcel-note-submit">Gönder</button>
                     </form>
@@ -3328,24 +3335,8 @@
             });
         }
         const noteCamera = document.getElementById("parcel-note-camera");
-        const noteCameraBtn = document.getElementById("parcel-note-camera-btn");
-        if (noteCameraBtn && noteCamera) {
-            noteCameraBtn.addEventListener("click", (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                noteCamera.click();
-            });
-        }
         if (noteCamera) noteCamera.addEventListener("change", () => updatePendingNoteAttachmentPreview("parcel-note-camera"));
         const noteFile = document.getElementById("parcel-note-file");
-        const noteFileBtn = document.getElementById("parcel-note-file-btn");
-        if (noteFileBtn && noteFile) {
-            noteFileBtn.addEventListener("click", (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                noteFile.click();
-            });
-        }
         if (noteFile) noteFile.addEventListener("change", () => updatePendingNoteAttachmentPreview("parcel-note-file"));
         const adminClose = document.getElementById("admin-role-close-x");
         if (adminClose) adminClose.addEventListener("click", closeAdminRoleModal);
