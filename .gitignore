@@ -10,7 +10,6 @@ Thumbs.db
 *.log
 deploy/netlify-web/.netlify/
 mobile/
-harita-olusturma/
 bilgilendirme/
 ARSA_ANALIZ.apk
 verikontrol.html

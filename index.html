@@ -79,6 +79,45 @@
         .header-admin-btn[hidden] {
             display: none !important;
         }
+        .main-tabs {
+            flex-shrink: 0;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 4px;
+            padding: 4px 6px 0;
+            background: #111;
+            border-bottom: 4px solid var(--accent);
+        }
+        .main-tabs.has-admin {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+        .main-tab {
+            min-width: 0;
+            padding: 11px 5px 12px;
+            border: 2px solid #4a4f5a;
+            border-bottom: none;
+            border-radius: 18px 18px 0 0;
+            background: #1b1b1b;
+            color: #f4f6f8;
+            font-size: 0.86rem;
+            font-weight: 900;
+            text-align: center;
+            cursor: pointer;
+            white-space: nowrap;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+        }
+        .main-tab:active,
+        .main-tab.main-tab--active {
+            background: #2b2b2b;
+            color: #fff;
+        }
+        .main-tab[hidden] {
+            display: none !important;
+        }
+        /* Parsel bilgileri açıkken üst sekme şeridi (Portföy, Parsel ekle, …) gizli — haritada daha geniş alan */
+        #sidebar.sidebar--parcel-detail-view #main-tabs {
+            display: none !important;
+        }
         .header-quick-menu {
             position: absolute;
             z-index: 30;
@@ -113,37 +152,142 @@
             background: #c0392b;
         }
         .city-group {
-            border-bottom: 1px solid #34495e;
+            border-bottom: 1px solid rgba(52, 73, 94, 0.55);
+        }
+        .city-group:last-of-type {
+            border-bottom: none;
         }
         .city-name {
-            padding: 12px 16px;
+            padding: 9px 10px 9px 6px;
+            margin: 2px 6px;
             cursor: pointer;
-            background: #2c3e50;
+            background: rgba(0, 0, 0, 0.12);
             font-weight: 600;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            font-size: 0.92rem;
+            font-size: 0.86rem;
+            color: #e8edf3;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
             touch-action: manipulation;
+            gap: 0;
+            user-select: none;
+            transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
         }
+        .city-name:hover {
+            background: rgba(230, 126, 34, 0.12);
+            border-color: rgba(230, 126, 34, 0.28);
+        }
+        .city-group.active .city-name {
+            background: rgba(230, 126, 34, 0.14);
+            border-color: rgba(230, 126, 34, 0.4);
+            box-shadow: inset 0 0 0 1px rgba(230, 126, 34, 0.15);
+        }
+        .portfoy-tree-caret {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            margin-right: 6px;
+            flex-shrink: 0;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+        .portfoy-tree-caret::after {
+            content: "";
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 4px 0 4px 5px;
+            border-color: transparent transparent transparent var(--accent);
+            margin-left: 1px;
+        }
+        .city-group.active .city-name .portfoy-tree-caret {
+            transform: rotate(90deg);
+        }
+        .city-name .city-name-text {
+            flex: 1;
+            min-width: 0;
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            text-align: left;
+        }
+        .city-name .proje-il-count {
+            flex: 0 0 auto;
+            margin-left: 8px;
+            padding: 0 0 0 2px;
+            font-size: 0.76rem;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+            color: #9eb0c0;
+            letter-spacing: 0.02em;
+        }
+        .portfoy-tree .district-list {
+            margin: 0;
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            background: transparent;
+            transition: max-height 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .portfoy-tree .city-group.active .district-list {
+            max-height: min(3200px, 75vh);
+        }
+        .portfoy-tree .district-nest {
+            margin: 0 8px 10px 20px;
+            padding: 6px 0 8px 12px;
+            border-left: 2px solid rgba(230, 126, 34, 0.35);
+            background: linear-gradient(90deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.06) 100%);
+            border-radius: 0 0 10px 10px;
+        }
+        .district-item--il-bounds {
+            font-weight: 600;
+            font-size: 0.78rem;
+            letter-spacing: 0.02em;
+            color: #b8c4d0;
+            border-bottom: 1px dashed rgba(127, 140, 153, 0.35);
+            margin-bottom: 2px;
+            padding-bottom: 6px;
+        }
+        .district-item--il-bounds::before {
+            content: "";
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            margin-right: 8px;
+            border-radius: 2px;
+            border: 1.5px solid rgba(230, 126, 34, 0.7);
+            background: rgba(230, 126, 34, 0.12);
+            flex-shrink: 0;
+        }
+        /* Portföy listesi: konum (top/left/width) JS ile #map sınırlarına göre (harita üstünde) */
         .proje-iller-details {
-            border-bottom: 1px solid #34495e;
-            background: #1a252f;
+            --portfoy-panel-w: 198px;
+            position: fixed;
+            z-index: 1900;
+            top: 0;
+            left: 0;
+            min-width: 110px;
+            max-width: min(226px, calc(100vw - 16px));
+            width: var(--portfoy-panel-w);
+            border: 1px solid rgba(230, 126, 34, 0.22);
+            border-radius: 14px;
+            background: linear-gradient(165deg, #1b2836 0%, #121a22 50%, #0e141a 100%);
             min-height: 0;
+            overflow: hidden;
+            box-shadow:
+                0 0 0 1px rgba(0, 0, 0, 0.45),
+                0 22px 48px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
         }
         .proje-iller-details > summary {
-            list-style: none;
-            padding: 14px 16px;
-            cursor: pointer;
-            font-weight: 700;
-            font-size: 0.82rem;
-            letter-spacing: 0.06em;
-            color: var(--accent);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: linear-gradient(180deg, #2c3e50 0%, #243342 100%);
-            touch-action: manipulation;
+            display: none;
         }
         .proje-iller-summary-main {
             margin-right: 8px;
@@ -177,18 +321,80 @@
             margin-top: 4px;
         }
         .menu-container-outer {
+            position: relative;
             min-height: 0;
+            height: 0;
+            overflow: visible;
         }
         .proje-iller-scroll {
-            max-height: min(40vh, 320px);
+            max-height: min(50vh, 400px, calc(100dvh - 120px));
             min-height: 0;
             overflow-y: auto;
+            overflow-x: hidden;
             -webkit-overflow-scrolling: touch;
-            padding-bottom: 16px;
+            padding: 0 0 8px 0;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(230, 126, 34, 0.5) rgba(0, 0, 0, 0.2);
         }
-        .district-list { display: none; background: #1a252f; }
-        .active .district-list { display: block; }
-        .district-item { padding: 10px 20px 10px 40px; cursor: pointer; font-size: 0.9rem; transition: 0.2s; }
+        .proje-iller-scroll.portfoy-tree {
+            position: relative;
+        }
+        .proje-iller-scroll.portfoy-tree::-webkit-scrollbar {
+            width: 7px;
+        }
+        .proje-iller-scroll.portfoy-tree::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+        }
+        .proje-iller-scroll.portfoy-tree::-webkit-scrollbar-thumb {
+            background: rgba(230, 126, 34, 0.4);
+            border-radius: 4px;
+        }
+        .proje-iller-scroll.portfoy-tree::-webkit-scrollbar-thumb:hover {
+            background: rgba(230, 126, 34, 0.55);
+        }
+        .menu-container-outer { --portfoy-district-pad: 2px; }
+        .portfoy-tree .district-item {
+            display: flex;
+            align-items: center;
+            padding: 7px 8px 7px 4px;
+            margin: 1px 0 1px 0;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            color: #ced8e2;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: rgba(230, 126, 34, 0.25);
+            transition: background 0.16s, color 0.16s, box-shadow 0.16s;
+        }
+        .portfoy-tree .district-item:not(.district-item--il-bounds)::before {
+            content: "";
+            display: block;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: rgba(180, 195, 210, 0.45);
+            margin-right: 9px;
+            margin-left: 2px;
+            flex-shrink: 0;
+        }
+        .portfoy-tree .district-item:hover {
+            background: rgba(230, 126, 34, 0.22);
+            color: #fff;
+            box-shadow: inset 0 0 0 1px rgba(230, 126, 34, 0.15);
+        }
+        .portfoy-tree .district-item:not(.district-item--il-bounds):hover::before {
+            background: #fff;
+        }
+        .portfoy-tree .district-item--il-bounds:hover {
+            color: #e8f0f8;
+        }
+        .portfoy-tree .district-item--il-bounds:hover::before {
+            border-color: rgba(255, 200, 150, 0.95);
+            background: rgba(230, 126, 34, 0.28);
+        }
+        /* Menü dışı (varsa) eski sınıf uyumu */
+        .district-item { padding: 6px 8px 6px var(--portfoy-district-pad, 4px); cursor: pointer; font-size: 0.84rem; transition: 0.2s; }
         .district-item:hover { background: var(--accent); color: white; }
         #detail-panel { padding: 20px; background: #2c3e50; display: none; flex-grow: 1; border-top: 2px solid var(--accent); }
         #map { flex-grow: 1; height: 100%; }
@@ -442,32 +648,6 @@
         }
         .leaflet-bottom.leaflet-right .leaflet-control-layers {
             margin-bottom: calc(10px + var(--safe-bottom)) !important;
-        }
-        .center-zoom-bar {
-            position: absolute;
-            bottom: calc(10px + var(--safe-bottom));
-            left: 50%;
-            transform: translateX(-50%);
-            margin: 0 !important;
-            display: flex;
-            gap: 6px;
-            z-index: 1200;
-            pointer-events: auto;
-        }
-        .center-zoom-btn {
-            width: 38px;
-            height: 38px;
-            border: none;
-            border-radius: 8px;
-            background: #2c3e50;
-            color: #fff;
-            font-size: 1.25rem;
-            line-height: 1;
-            font-weight: 700;
-            cursor: pointer;
-        }
-        .center-zoom-btn:hover {
-            background: #415a72;
         }
         #parcel-veri-gir-modal.parcel-modal--hidden {
             display: none !important;
@@ -2037,6 +2217,15 @@
             .sidebar-header h2 {
                 font-size: 1rem !important;
             }
+            .main-tabs {
+                gap: 3px;
+                padding: 4px 4px 0;
+            }
+            .main-tab {
+                padding: 10px 3px 11px;
+                border-radius: 16px 16px 0 0;
+                font-size: 0.78rem;
+            }
             .toolbar--minimal {
                 padding: 8px 12px !important;
             }
@@ -2046,7 +2235,11 @@
                 height: auto !important;
             }
             .proje-iller-scroll {
-                max-height: min(34vh, 280px);
+                max-height: min(40vh, 320px, calc(100dvh - 100px));
+            }
+            .proje-iller-details {
+                min-width: 110px;
+                max-width: min(226px, calc(100vw - 16px));
             }
             .parcel-detail-panel {
                 top: auto;
@@ -2081,19 +2274,10 @@
             }
             .parcel-add-bar .parcel-add-btn {
                 padding: 7px 10px !important;
-                font-size: 0.72rem !important;
+                font-size: 1rem !important;
             }
             .leaflet-bottom.leaflet-right .leaflet-control-layers {
                 margin-bottom: calc(8px + var(--safe-bottom)) !important;
-            }
-            .center-zoom-bar {
-                bottom: calc(8px + var(--safe-bottom));
-                gap: 4px;
-            }
-            .center-zoom-btn {
-                width: 34px;
-                height: 34px;
-                font-size: 1.1rem;
             }
         }
     </style>
@@ -2106,12 +2290,17 @@
             <button type="button" id="btn-auth-signout" class="header-admin-btn header-admin-btn--left" hidden>Çıkış</button>
             <h2>TURKA ARSA ANALİZ PORTALI</h2>
             <small id="status-text">Yükleniyor...</small>
-            <button type="button" id="btn-admin-panel" class="header-admin-btn header-admin-btn--right" hidden>Panel</button>
             <div id="header-quick-menu" class="header-quick-menu" hidden>
                 <button type="button" id="header-quick-refresh" class="header-quick-refresh">Yenile</button>
                 <button type="button" id="header-quick-logout" class="header-quick-logout">Çık</button>
             </div>
         </div>
+        <nav id="main-tabs" class="main-tabs" aria-label="Ana menü">
+            <button type="button" id="btn-main-portfolio" class="main-tab">Portföy</button>
+            <button type="button" id="btn-map-parcel-add" class="main-tab">Parsel ekle</button>
+            <button type="button" id="btn-main-region" class="main-tab">Tüm bölge(0)</button>
+            <button type="button" id="btn-admin-panel" class="main-tab" hidden>Panel</button>
+        </nav>
         <div id="auth-panel" class="auth-panel">
             <strong id="auth-panel-email">Giriş bekleniyor</strong>
             <div class="auth-panel-actions">
@@ -2127,8 +2316,8 @@
         </div>
         <div id="menu-container" class="menu-container-outer">
             <details class="proje-iller-details" id="proje-iller-details">
-                <summary><span class="proje-iller-summary-main">PROJE İLLERİ</span><span id="active-record-badge" class="active-record-badge">Aktif kayıt: -</span></summary>
-                <div class="proje-iller-scroll" id="menu-container-inner"></div>
+                <summary><span class="proje-iller-summary-main">Portföy</span><span id="active-record-badge" class="active-record-badge">Aktif kayıt: -</span></summary>
+                <div class="proje-iller-scroll portfoy-tree" id="menu-container-inner"></div>
             </details>
         </div>
         <div id="detail-panel">
@@ -2655,8 +2844,10 @@
         const signedIn = !!(auth.currentUser && auth.currentUser.email);
         if (emailEl) emailEl.textContent = signedIn ? currentUserEmail || auth.currentUser.email : "Giriş gerekli";
         if (adminBtn) adminBtn.hidden = !hasAdminPermission();
+        const tabs = document.getElementById("main-tabs");
+        if (tabs) tabs.classList.toggle("has-admin", hasAdminPermission());
         if (loginBtn) loginBtn.hidden = signedIn;
-        if (signoutBtn) signoutBtn.hidden = !hasAdminPermission();
+        if (signoutBtn) signoutBtn.hidden = true;
     }
 
     function applySignedOutAuthState() {
@@ -2929,7 +3120,7 @@
         .attribution({ prefix: false })
         .addAttribution("Harita © OpenStreetMap katkıcıları © CARTO · Uydu © Esri")
         .addTo(map);
-    baseStreet.addTo(map);
+    baseSatellite.addTo(map);
     L.control
         .layers(
             { "Harita (sokak)": baseStreet, Uydu: baseSatellite },
@@ -2955,6 +3146,11 @@
         if (ok) parcelLabel = String(n);
         else if (lastParcelDbCount >= 0) parcelLabel = String(lastParcelDbCount);
         updateActiveRecordBadge(parcelLabel);
+        const tbr = document.getElementById("btn-main-region");
+        if (tbr) {
+            const tabN = ok ? n : lastParcelDbCount >= 0 ? lastParcelDbCount : 0;
+            tbr.textContent = "Tüm bölge(" + tabN + ")";
+        }
         const roleLabel = currentUserRole || "?";
         const emailLabel = currentUserEmail || (auth.currentUser && auth.currentUser.email) || "Giriş bekleniyor";
         const line =
@@ -2978,9 +3174,10 @@
         } else {
             showTransientAppStatus(line, color || "#1dd1a1");
         }
+        void updateDistrictParcelCountsInMenu();
     }
 
-    const ParcelAddControl = L.Control.extend({
+    const BottomZoomControl = L.Control.extend({
         options: { position: "bottomleft" },
         onAdd() {
             const c = L.DomUtil.create("div", "leaflet-bar leaflet-control parcel-add-bar");
@@ -2989,61 +3186,28 @@
             c.style.gap = "6px";
             const b = L.DomUtil.create("button", "parcel-add-btn", c);
             b.type = "button";
-            b.id = "btn-map-parcel-add";
-            b.textContent = "Parsel ekle";
-            b.title = "TKGM GeoJSON / KML ile parsel kaydet";
+            b.textContent = "+";
+            b.title = "Yakınlaştır";
             const b2 = L.DomUtil.create("button", "parcel-add-btn", c);
             b2.type = "button";
-            b2.textContent = "Tüm bölge";
-            b2.title = "Projedeki tüm illerin sınırlarını göster ve haritaya sığdır";
+            b2.textContent = "−";
+            b2.title = "Uzaklaştır";
             b2.style.background = "#2980b9";
             L.DomEvent.disableClickPropagation(c);
             L.DomEvent.on(b, "click", L.DomEvent.stopPropagation);
             L.DomEvent.on(b, "click", L.DomEvent.preventDefault);
             L.DomEvent.on(b, "click", () => {
-                void openParcelAddModal();
+                map.zoomIn();
             });
             L.DomEvent.on(b2, "click", L.DomEvent.stopPropagation);
             L.DomEvent.on(b2, "click", L.DomEvent.preventDefault);
             L.DomEvent.on(b2, "click", () => {
-                showAllProjectRegion().catch((e) => console.warn(e));
+                map.zoomOut();
             });
             return c;
         }
     });
-    new ParcelAddControl().addTo(map);
-    function mountBottomCenterZoomBar() {
-        const host = map.getContainer();
-        if (!host) return;
-        const old = host.querySelector(".center-zoom-bar");
-        if (old) old.remove();
-        const c = document.createElement("div");
-        c.className = "center-zoom-bar";
-        const zin = document.createElement("button");
-        zin.type = "button";
-        zin.className = "center-zoom-btn";
-        zin.textContent = "+";
-        zin.title = "Yakınlaştır";
-        const zout = document.createElement("button");
-        zout.type = "button";
-        zout.className = "center-zoom-btn";
-        zout.textContent = "−";
-        zout.title = "Uzaklaştır";
-        c.appendChild(zin);
-        c.appendChild(zout);
-        zin.addEventListener("click", (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            map.zoomIn();
-        });
-        zout.addEventListener("click", (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            map.zoomOut();
-        });
-        host.appendChild(c);
-    }
-    mountBottomCenterZoomBar();
+    new BottomZoomControl().addTo(map);
 
     let projectOverviewGroup = null;
     let projectOverviewActive = false;
@@ -3240,6 +3404,32 @@
         const bd = document.getElementById("app-action-sheet-backdrop");
         if (bd) bd.addEventListener("click", () => hideActionSheet(false));
     })();
+    /** Portföy il/ilçe açılır listesini harita alanına sabitler (haritanın sol üstünden aşağı açılır) */
+    function positionPortfolioDropdown() {
+        const details = document.getElementById("proje-iller-details");
+        const mapEl = document.getElementById("map");
+        if (!details || !mapEl) return;
+        if (!details.open) return;
+        const m = mapEl.getBoundingClientRect();
+        const margin = 8;
+        if (m.width < 2 || m.height < 2) return;
+        const maxW = Math.max(115, Math.min(210, m.width - margin * 2));
+        details.style.left = m.left + margin + "px";
+        details.style.top = m.top + margin + "px";
+        details.style.width = maxW + "px";
+        details.style.maxWidth = maxW + "px";
+    }
+    (function wirePortfolioDropdownPositioning() {
+        function rebind() {
+            const details = document.getElementById("proje-iller-details");
+            if (!details || !details.open) return;
+            requestAnimationFrame(() => positionPortfolioDropdown());
+        }
+        window.addEventListener("resize", rebind, { passive: true });
+        window.addEventListener("orientationchange", rebind, { passive: true });
+        const sidebar = document.getElementById("sidebar");
+        if (sidebar) sidebar.addEventListener("scroll", rebind, { passive: true });
+    })();
     (function wireAppLoginSheet() {
         const root = document.getElementById("app-login-sheet");
         if (!root) return;
@@ -3353,6 +3543,49 @@
             adminForm.addEventListener("submit", (e) => {
                 e.preventDefault();
                 void saveAdminRoleFromForm().catch((err) => showAppAlert("Rol kaydedilemedi", String((err && err.message) || err)));
+            });
+        }
+        const portfolioBtn = document.getElementById("btn-main-portfolio");
+        const portfolioDetails = document.getElementById("proje-iller-details");
+        if (portfolioBtn && portfolioDetails) {
+            portfolioBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                portfolioDetails.open = !portfolioDetails.open;
+            });
+            portfolioDetails.addEventListener("toggle", () => {
+                portfolioBtn.classList.toggle("main-tab--active", portfolioDetails.open);
+                if (portfolioDetails.open) {
+                    requestAnimationFrame(() => {
+                        positionPortfolioDropdown();
+                        requestAnimationFrame(() => positionPortfolioDropdown());
+                    });
+                }
+            });
+            document.addEventListener("click", (e) => {
+                if (!portfolioDetails.open) return;
+                const menuWrap = document.getElementById("menu-container");
+                if (menuWrap && (menuWrap.contains(e.target) || portfolioBtn.contains(e.target))) return;
+                portfolioDetails.open = false;
+                portfolioBtn.classList.remove("main-tab--active");
+            });
+        }
+        const addParcelBtn = document.getElementById("btn-map-parcel-add");
+        if (addParcelBtn) {
+            addParcelBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                if (portfolioDetails) portfolioDetails.open = false;
+                if (portfolioBtn) portfolioBtn.classList.remove("main-tab--active");
+                void openParcelAddModal();
+            });
+        }
+        const regionBtn = document.getElementById("btn-main-region");
+        if (regionBtn) {
+            regionBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                if (portfolioDetails) portfolioDetails.open = false;
+                if (portfolioBtn) portfolioBtn.classList.remove("main-tab--active");
+                showAllProjectRegion().catch((err) => console.warn(err));
             });
         }
         updateAuthPanel();
@@ -3476,9 +3709,67 @@
         return s.trim().toLocaleLowerCase("tr-TR").replace(/\s+/g, " ");
     }
 
-    function districtNameFromFeature(f) {
+    function districtNameCandidatesFromFeature(f) {
         const p = f.properties || {};
-        return p.name || p["name:tr"] || p["official_name:tr"] || p.ref || "İlçe";
+        const tags = p.tags && typeof p.tags === "object" ? p.tags : {};
+        const raw = [
+            p.name,
+            p["name:tr"],
+            p["official_name:tr"],
+            p.ilce,
+            p.ILCE_ADI,
+            p.NAME_2,
+            p.ADMIN_NAME,
+            p.district,
+            tags.name,
+            tags["name:tr"]
+        ];
+        const out = [];
+        for (const r of raw) {
+            if (r != null && String(r).trim()) out.push(String(r).trim());
+        }
+        return out.length ? out : [""];
+    }
+
+    function districtNameFromFeature(f) {
+        const c = districtNameCandidatesFromFeature(f);
+        return (c[0] && c[0].length) ? c[0] : "İlçe";
+    }
+
+    /**
+     * Menüdeki ilçe adı (ör. "Merkez") ile GeoJSON/ OSM isimlerini eşleştirir;
+     * "Merkez" çoğunlukla OSM'de il adı veya farklı yazım olarak gelir.
+     */
+    function menuIlceMatchesBoundaryFeature(menuIlce, f, item) {
+        const t = normalizeTr(String(menuIlce));
+        if (!t) return false;
+        const dNorms = [
+            ...new Set(districtNameCandidatesFromFeature(f).map((s) => normalizeTr(s)).filter(Boolean))
+        ];
+        for (const dn of dNorms) {
+            if (dn === t) return true;
+        }
+        if (t === "merkez") {
+            const alts = new Set(
+                [normalizeTr(item.city), ...(item.osmAreaNames || []).map((x) => normalizeTr(x))].filter(Boolean)
+            );
+            for (const dn of dNorms) {
+                if (dn === "merkez" || /\bmerkez\b/i.test(dn) || /\smerkez$/i.test(dn)) return true;
+                for (const a of alts) {
+                    if (a && (dn === a || dn.indexOf(a) === 0 || a.indexOf(dn) === 0)) return true;
+                }
+            }
+            return false;
+        }
+        for (const dn of dNorms) {
+            if (t.length < 3 || dn.length < 3) continue;
+            if (dn === t) return true;
+            if (t.includes(dn) || dn.includes(t)) {
+                if (Math.min(t.length, dn.length) / Math.max(t.length, dn.length) < 0.45) continue;
+                return true;
+            }
+        }
+        return false;
     }
 
     /** OSM bazen ilçe merkezini Point olarak döndürür; Leaflet mavi marker çizer — sadece poligonları kullan. */
@@ -3707,7 +3998,8 @@ out geom;
             const t = f.geometry && f.geometry.type;
             return (t === "Polygon" || t === "MultiPolygon") && (!districtFeatureFilter || districtFeatureFilter(f));
         };
-        if (split.province.features.length) {
+        // Tek ilçe gösteriminde il poligonu ekleme: getBounds tüm ili kapsar, zoom o ilçeye sıkışmaz
+        if (split.province.features.length && !districtFeatureFilter) {
             L.geoJSON(split.province, {
                 filter: (f) => {
                     const t = f.geometry && f.geometry.type;
@@ -3814,29 +4106,53 @@ out geom;
             statusText.innerText = "Sınır verisi alınamadı (ağ/OSM).";
             statusText.style.color = "#e74c3c";
             refreshParcelPanel();
-            return;
+            return null;
         }
 
-        const targetDist = districtName ? normalizeTr(districtName) : null;
-        const districtFilter = targetDist
-            ? (f) => {
-                const dn = normalizeTr(districtNameFromFeature(f));
-                if (dn === targetDist) return true;
-                if (targetDist === "merkez" && /merkez/i.test(dn)) return true;
-                return false;
-            }
+        const districtFilter = districtName
+            ? (f) => menuIlceMatchesBoundaryFeature(districtName, f, item)
             : null;
 
         boundaryLayer = buildCityBoundaryLayers(split, districtFilter);
         boundaryLayer.addTo(map);
 
+        let districtParcelRows = null;
         try {
-            const b = boundaryLayer.getBounds();
-            if (b.isValid()) map.fitBounds(b.pad(0.08));
-        } catch (_) {}
+            if (districtName) {
+                districtParcelRows = await listParcelsForIlIlce(cityName, districtName);
+                const pBounds = combinedBoundsFromParcelRows(districtParcelRows);
+                if (pBounds && pBounds.isValid()) {
+                    map.flyToBounds(pBounds.pad(0.1), { padding: 24, maxZoom: 18 });
+                } else {
+                    const b = boundaryLayer.getBounds();
+                    const hasLayers = typeof boundaryLayer.getLayers === "function" && boundaryLayer.getLayers().length > 0;
+                    if (b.isValid() && hasLayers) {
+                        map.flyToBounds(b.pad(0.08), { padding: 20, maxZoom: 16 });
+                    } else {
+                        const [lat, lng] = item.coords || [];
+                        if (lat != null && lng != null) {
+                            const z = (item.dists && item.dists.length && item.dists.length < 3) ? 10 : 12;
+                            map.flyTo([lat, lng], z, { duration: 0.35 });
+                        }
+                    }
+                }
+            } else {
+                const b = boundaryLayer.getBounds();
+                const hasLayers = typeof boundaryLayer.getLayers === "function" && boundaryLayer.getLayers().length > 0;
+                if (b.isValid() && hasLayers) {
+                    map.flyToBounds(b.pad(0.08), { padding: 12 });
+                }
+            }
+        } catch (_) {
+            if (districtName) {
+                const [lat, lng] = item.coords || [];
+                if (lat != null && lng != null) map.flyTo([lat, lng], 12, { duration: 0.35 });
+            }
+        }
 
         await updateAppStatusLine("Sistem hazır", "#1dd1a1");
         refreshParcelPanel();
+        return districtName ? districtParcelRows : null;
     }
 
     const PARCEL_DB_NAME = "arsa_analiz_parcel_db";
@@ -3905,6 +4221,15 @@ out geom;
         if (!ass.length && menuLocKey(r.il) === ilK && menuLocKey(r.ilce) === ilceK) return true;
         return false;
     }
+    /** Menüde il satırı için: bu ile ilişkili tüm parseller (çoklu ilişkide eşleşen il) */
+    function parcelMatchesMenuIl(raw, il) {
+        const r = normalizeParcelRecord(raw);
+        if (!r) return false;
+        const ilK = menuLocKey(il);
+        const ass = r.associations || [];
+        if (ass.length) return ass.some((a) => a && menuLocKey(a.il) === ilK);
+        return menuLocKey(r.il) === ilK;
+    }
 
     async function listParcelsForIlIlce(il, ilce) {
         const all = await parcelDbGetAll();
@@ -3971,7 +4296,7 @@ out geom;
         }, 2000);
     }
 
-    /** PROJE İLLERİ menüsündeki ilçe satırları: «İlçe (N)» — N = bu menü il+ilçe ile ilişkili parsel sayısı. */
+    /** Portföy menüsü: il başlığı (n), ilçe(n) sayıları; toplam → Tüm bölge butonu updateAppStatusLine ile. */
     async function updateDistrictParcelCountsInMenu() {
         const inner = document.getElementById("menu-container-inner");
         if (!inner) return;
@@ -3993,7 +4318,30 @@ out geom;
                 const r = normalizeParcelRecord(raw);
                 if (r && r.id) seen.add(r.id);
             }
-            el.textContent = base + " (" + seen.size + ")";
+            el.textContent = base + "(" + seen.size + ")";
+        });
+        inner.querySelectorAll(".city-name[data-menu-il] .proje-il-count").forEach((cnt) => {
+            const head = cnt.closest(".city-name[data-menu-il]");
+            const il = head && head.getAttribute("data-menu-il");
+            if (!il) return;
+            const seen = new Set();
+            for (const raw of all) {
+                if (!parcelMatchesMenuIl(raw, il)) continue;
+                const r = normalizeParcelRecord(raw);
+                if (r && r.id) seen.add(r.id);
+            }
+            cnt.textContent = "(" + seen.size + ")";
+        });
+        inner.querySelectorAll(".district-item--il-bounds[data-menu-il-for-bounds]").forEach((el) => {
+            const il = el.getAttribute("data-menu-il-for-bounds");
+            if (!il) return;
+            const seen = new Set();
+            for (const raw of all) {
+                if (!parcelMatchesMenuIl(raw, il)) continue;
+                const r = normalizeParcelRecord(raw);
+                if (r && r.id) seen.add(r.id);
+            }
+            el.textContent = "İl(" + seen.size + ")";
         });
     }
 
@@ -4062,6 +4410,22 @@ out geom;
         }
         if (!gj || typeof gj !== "object") return { ok: false, gj: null, err: "geojson geçersiz" };
         return { ok: true, gj, err: null };
+    }
+
+    /** Menüde seçilen il/ilçe için DB’deki parsellerin geometrilerinin ortak sınırı (zoom için). */
+    function combinedBoundsFromParcelRows(rows) {
+        if (!rows || !rows.length) return null;
+        const b = L.latLngBounds();
+        for (const r of rows) {
+            const p = parseParcelStoredGeojson(r);
+            if (!p.ok) continue;
+            try {
+                const lyr = L.geoJSON(p.gj);
+                const bb = lyr.getBounds();
+                if (bb && bb.isValid()) b.extend(bb);
+            } catch (_) {}
+        }
+        return b.isValid() ? b : null;
     }
 
     /** Tek nesne veya dizi olarak saklanmış ekleri tek diziye indirger (yerel base64 veya Storage yolu). */
@@ -6679,7 +7043,15 @@ out geom;
         }
     }
 
+    function setSidebarMainTabsForParcelDetail(opened) {
+        const side = document.getElementById("sidebar");
+        const tabs = document.getElementById("main-tabs");
+        if (side) side.classList.toggle("sidebar--parcel-detail-view", Boolean(opened));
+        if (tabs) tabs.setAttribute("aria-hidden", opened ? "true" : "false");
+    }
+
     function hideParcelDetailPanel() {
+        setSidebarMainTabsForParcelDetail(false);
         const el = document.getElementById("parcel-detail-panel");
         if (el) el.classList.add("parcel-detail-panel--hidden");
         const action = document.getElementById("parcel-detail-action-panel");
@@ -6754,6 +7126,10 @@ out geom;
             _parcelMapRefitTimer = null;
             try {
                 map.invalidateSize({ pan: false, animate: false });
+            } catch (_) {}
+            try {
+                const pd = document.getElementById("proje-iller-details");
+                if (pd && pd.open) positionPortfolioDropdown();
             } catch (_) {}
             if (openParcelDetailRecId) focusParcelLayerOnMapById(openParcelDetailRecId);
         }, 70);
@@ -6885,6 +7261,7 @@ out geom;
         el.classList.remove("parcel-detail-panel--hidden");
         const action = document.getElementById("parcel-detail-action-panel");
         if (action) action.classList.remove("parcel-detail-panel--hidden");
+        setSidebarMainTabsForParcelDetail(true);
         scheduleParcelMapLayoutReflow();
     }
 
@@ -8593,11 +8970,60 @@ out geom;
 
     function renderLocation(item) {
         if (!menu) return;
-        const group = document.createElement('div');
-        group.className = 'city-group';
-        group.innerHTML = `<div class="city-name">${item.city} <span>▼</span></div>`;
-        const list = document.createElement('div');
-        list.className = 'district-list';
+        const group = document.createElement("div");
+        group.className = "city-group";
+        const head = document.createElement("div");
+        head.className = "city-name";
+        head.setAttribute("data-menu-il", item.city);
+        head.setAttribute("role", "button");
+        head.setAttribute("tabindex", "0");
+        head.setAttribute("aria-expanded", "false");
+        const caret = document.createElement("span");
+        caret.className = "portfoy-tree-caret";
+        caret.setAttribute("aria-hidden", "true");
+        const textWrap = document.createElement("span");
+        textWrap.className = "city-name-text";
+        const titleSpan = document.createElement("span");
+        titleSpan.className = "city-name-title";
+        titleSpan.textContent = item.city;
+        const ilCount = document.createElement("span");
+        ilCount.className = "proje-il-count";
+        ilCount.textContent = "(0)";
+        textWrap.appendChild(titleSpan);
+        head.appendChild(caret);
+        head.appendChild(textWrap);
+        head.appendChild(ilCount);
+        group.appendChild(head);
+        const list = document.createElement("div");
+        list.className = "district-list";
+
+        const ilBoundsRow = document.createElement("div");
+        ilBoundsRow.className = "district-item district-item--il-bounds";
+        ilBoundsRow.setAttribute("data-menu-il-for-bounds", item.city);
+        ilBoundsRow.setAttribute("role", "button");
+        ilBoundsRow.textContent = "İl(0)";
+        ilBoundsRow.onclick = async (e) => {
+            e.stopPropagation();
+            const portfolioDetails = document.getElementById("proje-iller-details");
+            const portfolioBtn = document.getElementById("btn-main-portfolio");
+            if (portfolioDetails) portfolioDetails.open = false;
+            if (portfolioBtn) portfolioBtn.classList.remove("main-tab--active");
+            selectedLocation = { il: item.city, ilce: null, item };
+            document.getElementById("detail-panel").style.display = "none";
+            map.flyTo(item.coords, 9);
+            await showBoundary(item.city, null, item);
+            let rows = [];
+            try {
+                rows = await listParcelsForProvinceMenuItem(item);
+            } catch (err) {
+                console.warn(err);
+            }
+            showDistrictParcelToast(`${item.city} — tüm ilçeler`, rows);
+        };
+
+        const nest = document.createElement("div");
+        nest.className = "district-nest";
+        nest.appendChild(ilBoundsRow);
 
         item.dists.forEach((d) => {
             const dItem = document.createElement("div");
@@ -8605,39 +9031,41 @@ out geom;
             dItem.setAttribute("data-menu-il", item.city);
             dItem.setAttribute("data-menu-ilce", d);
             dItem.setAttribute("data-menu-dist-label", d);
-            dItem.textContent = d + " (0)";
-            dItem.onclick = async () => {
+            dItem.textContent = d + "(0)";
+            dItem.onclick = async (e) => {
+                e.stopPropagation();
+                const portfolioDetails = document.getElementById("proje-iller-details");
+                const portfolioBtn = document.getElementById("btn-main-portfolio");
+                if (portfolioDetails) portfolioDetails.open = false;
+                if (portfolioBtn) portfolioBtn.classList.remove("main-tab--active");
                 selectedLocation = { il: item.city, ilce: d, item };
                 document.getElementById("detail-panel").style.display = "none";
-                await showBoundary(item.city, d, item);
                 let rows = [];
                 try {
-                    rows = await listParcelsForIlIlce(item.city, d);
-                } catch (e) {
-                    console.warn(e);
+                    rows = (await showBoundary(item.city, d, item)) || [];
+                } catch (err) {
+                    console.warn(err);
                 }
                 showDistrictParcelToast(`${item.city} — ${d}`, rows);
             };
-            list.appendChild(dItem);
+            nest.appendChild(dItem);
         });
+        list.appendChild(nest);
         group.appendChild(list);
-        group.querySelector(".city-name").onclick = async () => {
-            const expanding = !group.classList.contains("active");
+
+        const syncHeadAria = () => head.setAttribute("aria-expanded", group.classList.contains("active") ? "true" : "false");
+        head.onclick = (e) => {
+            e.preventDefault();
             group.classList.toggle("active");
-            selectedLocation = { il: item.city, ilce: null, item };
-            document.getElementById("detail-panel").style.display = "none";
+            syncHeadAria();
             void updateDistrictParcelCountsInMenu();
-            if (!expanding) return;
-            map.flyTo(item.coords, 9);
-            await showBoundary(item.city, null, item);
-            let rows = [];
-            try {
-                rows = await listParcelsForProvinceMenuItem(item);
-            } catch (e) {
-                console.warn(e);
-            }
-            showDistrictParcelToast(`${item.city} — tüm ilçeler`, rows);
         };
+        head.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                head.click();
+            }
+        });
         menu.appendChild(group);
     }
 
