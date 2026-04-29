@@ -4428,6 +4428,37 @@ out geom;
         return b.isValid() ? b : null;
     }
 
+    /** Önce kayıt geojson'undan, olmazsa haritadaki çizili parsellerden sınır hesaplar. */
+    function combinedBoundsFromVisibleParcelLayers(rows) {
+        if (!rows || !rows.length) return null;
+        const b = L.latLngBounds();
+        for (const r of rows) {
+            const id = r && r.id != null ? String(r.id).trim() : "";
+            if (!id) continue;
+            const layer = parcelMapLayers.get(id);
+            if (!layer || typeof layer.getBounds !== "function") continue;
+            try {
+                const lb = layer.getBounds();
+                if (lb && lb.isValid()) b.extend(lb);
+            } catch (_) {}
+        }
+        return b.isValid() ? b : null;
+    }
+
+    function flyToParcelRows(rows, options) {
+        if (!rows || !rows.length) return false;
+        const opts = options && typeof options === "object" ? options : {};
+        const padding = Number.isFinite(opts.padding) ? opts.padding : 24;
+        const maxZoom = Number.isFinite(opts.maxZoom) ? opts.maxZoom : 18;
+        const padFactor = Number.isFinite(opts.padFactor) ? opts.padFactor : 0.1;
+        const dbBounds = combinedBoundsFromParcelRows(rows);
+        const fallbackBounds = combinedBoundsFromVisibleParcelLayers(rows);
+        const target = (dbBounds && dbBounds.isValid() ? dbBounds : fallbackBounds);
+        if (!target || !target.isValid()) return false;
+        map.flyToBounds(target.pad(padFactor), { padding, maxZoom });
+        return true;
+    }
+
     /** Tek nesne veya dizi olarak saklanmış ekleri tek diziye indirger (yerel base64 veya Storage yolu). */
     function normalizeAttachmentList(v) {
         if (!v) return [];
@@ -9018,6 +9049,7 @@ out geom;
             } catch (err) {
                 console.warn(err);
             }
+            flyToParcelRows(rows, { padding: 20, maxZoom: 16, padFactor: 0.08 });
             showDistrictParcelToast(`${item.city} — tüm ilçeler`, rows);
         };
 
@@ -9046,6 +9078,14 @@ out geom;
                 } catch (err) {
                     console.warn(err);
                 }
+                if (!rows.length) {
+                    try {
+                        rows = await listParcelsForIlIlce(item.city, d);
+                    } catch (err) {
+                        console.warn(err);
+                    }
+                }
+                flyToParcelRows(rows, { padding: 24, maxZoom: 18, padFactor: 0.1 });
                 showDistrictParcelToast(`${item.city} — ${d}`, rows);
             };
             nest.appendChild(dItem);
